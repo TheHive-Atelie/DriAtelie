@@ -1,4 +1,4 @@
-package com.driatelie.driah;
+package com.driatelie;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

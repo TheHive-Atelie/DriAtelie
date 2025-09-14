@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../../../DriAtelie"
+		},
+		{
+			"path": "driah"
+		}
+	],
+	"settings": {
+		"java.compile.nullAnalysis.mode": "automatic"
+	}
+}

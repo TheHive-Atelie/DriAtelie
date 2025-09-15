@@ -16,7 +16,7 @@ import lombok.Setter;
 @Table(name = "servicos")
 @NoArgsConstructor
 @AllArgsConstructor
-public class servico {
+public class Servico {
 
     @Id
     @GeneratedValue 

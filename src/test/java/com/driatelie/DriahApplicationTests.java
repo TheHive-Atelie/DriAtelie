@@ -1,4 +1,4 @@
-package com.driatelie.driah;
+package com.driatelie;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

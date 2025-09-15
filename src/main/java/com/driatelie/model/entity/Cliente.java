@@ -46,5 +46,3 @@ private List<Ordem_servico> ordensServico;
 // `ordens_servico` int DEFAULT NULL,
 // PRIMARY KEY (`idclientes`)
 // ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-private nome = "carra"

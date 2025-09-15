@@ -6,6 +6,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -24,8 +25,8 @@ import lombok.Setter;
 public class Cliente {
     
 @Id
-@GeneratedValue
-private int idclientes;
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private Integer idclientes;
 @Column(name = "nome_cliente", nullable = false)
 private String nome_cliente;
 @Column(name = "telefone_cliente")

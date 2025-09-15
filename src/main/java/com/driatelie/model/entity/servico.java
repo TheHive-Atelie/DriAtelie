@@ -3,6 +3,7 @@ package com.driatelie.model.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -19,8 +20,8 @@ import lombok.Setter;
 public class Servico {
 
     @Id
-    @GeneratedValue 
-    private int id_servicos;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id_servicos;
     @Column(name = "nome_tipo_servico", length = 25, nullable = false)
     private String nome_tipo_servico;
     @Column(name = "preco", length = 4, nullable = false)

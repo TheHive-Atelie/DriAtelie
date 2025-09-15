@@ -1,9 +1,13 @@
 package com.driatelie.model.entity;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +21,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class cliente {
+public class Cliente {
     
 @Id
 @GeneratedValue
@@ -28,8 +32,9 @@ private String nome_cliente;
 private String telefone_cliente;
 @Column(name = "email_cliente")
 private String email_cliente;
-@Column(name = "ordens_servico")
-private int ordens_servico;
+
+@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+private List<Ordem_servico> ordensServico;
 
 }
 // CREATE TABLE `clientes` (

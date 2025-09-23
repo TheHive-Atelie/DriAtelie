@@ -26,7 +26,7 @@ public class Cliente {
     
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
-private Integer idclientes;
+private Integer id;
 @Column(name = "nome_cliente", nullable = false)
 private String nome_cliente;
 @Column(name = "telefone_cliente")

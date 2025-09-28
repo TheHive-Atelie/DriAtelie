@@ -11,6 +11,8 @@ import com.driatelie.model.entity.Cliente;
 import com.driatelie.model.entity.Ordem_servico;
 import com.driatelie.model.entity.repository.ClienteRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service    
 public class ClienteService {
 
@@ -37,6 +39,7 @@ public class ClienteService {
         return clienteRepository.save(cliente);
     }
 
+    @Transactional
     public void deleteCliente(Integer id) {
         clienteRepository.deleteById(id);
     }

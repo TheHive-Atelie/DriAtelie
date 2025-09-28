@@ -26,9 +26,10 @@ public class Cliente {
     
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Column(name = "id_cliente")
 private Integer id;
 @Column(name = "nome_cliente", nullable = false)
-private String nome_cliente;
+private String nome;
 @Column(name = "telefone_cliente")
 private String telefone_cliente;
 @Column(name = "email_cliente")

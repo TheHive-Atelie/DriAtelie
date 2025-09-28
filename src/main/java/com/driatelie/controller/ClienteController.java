@@ -34,8 +34,8 @@ public class ClienteController {
         }
     }
 
-    @GetMapping("/nome")
-    public ResponseEntity<List<Cliente>> findByName(@RequestParam String nome) {
+    @GetMapping("/nome/{nome}")
+    public ResponseEntity<List<Cliente>> findByName(@PathVariable String nome) {
         List<Cliente> clientes = clienteService.getByName(nome);
         return ResponseEntity.ok(clientes);
     }

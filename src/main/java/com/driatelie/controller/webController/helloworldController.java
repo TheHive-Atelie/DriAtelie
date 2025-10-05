@@ -1,4 +1,4 @@
-package com.driatelie.controller;
+package com.driatelie.controller.webController;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

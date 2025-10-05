@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-DriahApplication<driah>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.driatelie.DriahApplication",
+            "projectName": "driah",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

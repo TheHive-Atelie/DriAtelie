@@ -1,5 +1,5 @@
 package com.driatelie.controller;
 
-public class Ordem_servicoController {
+public class OrdemServicoController {
     
 }

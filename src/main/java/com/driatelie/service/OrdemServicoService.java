@@ -1,5 +1,5 @@
 package com.driatelie.service;
 
-public class Ordem_servicoService {
+public class OrdemServicoService {
     
 }

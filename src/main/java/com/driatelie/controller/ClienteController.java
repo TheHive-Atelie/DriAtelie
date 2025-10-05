@@ -1,7 +1,7 @@
 package com.driatelie.controller;
 
 import com.driatelie.model.entity.Cliente;
-import com.driatelie.model.entity.Ordem_servico;
+import com.driatelie.model.entity.OrdemServico;
 import com.driatelie.service.ClienteService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,8 +70,8 @@ public class ClienteController {
     }
 
     @GetMapping("/{id}/servicos")
-    public ResponseEntity<List<Ordem_servico>> getOrdensDeServico(@PathVariable Integer id) {
-        List<Ordem_servico> ordens = clienteService.getOrdensServicoByClienteId(id);
+    public ResponseEntity<List<OrdemServico>> getOrdensDeServico(@PathVariable Integer id) {
+        List<OrdemServico> ordens = clienteService.getOrdensServicoByClienteId(id);
         return ResponseEntity.ok(ordens);
     }
 }

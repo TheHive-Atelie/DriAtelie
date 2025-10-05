@@ -25,7 +25,7 @@ import lombok.Setter;
 @AllArgsConstructor
 
 
-public class Ordem_servico {    
+public class OrdemServico {    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idordens_de_servico")

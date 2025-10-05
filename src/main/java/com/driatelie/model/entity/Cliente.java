@@ -36,7 +36,7 @@ private String telefone_cliente;
 private String email_cliente;
 
 @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
-private List<Ordem_servico> ordensServico;
+private List<OrdemServico> ordensServico;
 
 }
 // CREATE TABLE `clientes` (

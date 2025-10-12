@@ -1,12 +1,19 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+import { createRouter, createWebHashHistory } from 'https://unpkg.com/vue-router@4/dist/vue-router.esm-browser.js'
+import { Navbar } from './components/navbar.js'
 
-import App from './App.vue'
-import router from './router'
+const routes = [
+    {
+        path: '/navbar',
+        component: { Navbar }
+    },
+    { path: '/', redirect: '/navbar' }
+]
+
+const router = createRouter({ history: createWebHashHistory(), routes })
+
+const App = { template: `<router-view></router-view>` }
 
 const app = createApp(App)
-
-app.use(createPinia())
 app.use(router)
-
 app.mount('#app')

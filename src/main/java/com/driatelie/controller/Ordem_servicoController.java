@@ -9,9 +9,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.driatelie.model.entity.Ordem_servico;
 import com.driatelie.service.Ordem_servicoService;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+
+
 
 
 
@@ -27,6 +34,17 @@ public class Ordem_servicoController {
         List<Ordem_servico> ordem_servicos = ordem_servicoService.listAll();
         return ResponseEntity.ok(ordem_servicos);
     }   
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findByIs(@PathVariable Integer id) {
+        List<Ordem_servico> ordem_servicos = ordem_servicoService.getOrdem_servicosById(id);
+        if (!ordem_servicos.isEmpty()) {
+            return ResponseEntity.ok(ordem_servicos);
+        } else {
+            return ResponseEntity.status(404).body("Ordem de serviço não encontrada");
+        }
+    }
+    
     
     @PostMapping
     public ResponseEntity<Ordem_servico> newOrdem_servico(@RequestBody Ordem_servico ordem_servico) {
@@ -40,5 +58,34 @@ public class Ordem_servicoController {
             return ResponseEntity.status(500).build();
         }
     }
-    
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateOrdem_servicoById(@PathVariable Integer id, @RequestBody Ordem_servico ordem_servicoAtualizado) {
+        List<Ordem_servico> ordem_servicosExistentes = ordem_servicoService.getOrdem_servicosById(id);
+        if (!ordem_servicosExistentes.isEmpty()) {
+            ordem_servicoAtualizado.setId(id);
+            try {
+                Ordem_servico atualizado = ordem_servicoService.saveOrdem_servico(ordem_servicoAtualizado);
+                return ResponseEntity.ok(atualizado);
+            } catch (IllegalArgumentException ex) {
+                return ResponseEntity.badRequest().body(ex.getMessage());
+            } catch (Exception ex) {
+                // Could log the exception
+                return ResponseEntity.status(500).build();
+            }
+        } else {
+            return ResponseEntity.status(404).body("Ordem de serviço não encontrada");
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> dellOrdem_servicoById(@PathVariable Integer id) {
+        List<Ordem_servico> ordem_servicos = ordem_servicoService.getOrdem_servicosById(id);
+        if (!ordem_servicos.isEmpty()) {
+            ordem_servicoService.deleteOrdem_servico(id);
+            return ResponseEntity.ok("Ordem de serviço deletada com sucesso");
+        } else {
+            return ResponseEntity.status(404).body("Ordem de serviço não encontrada");
+        }
+    }   
 }

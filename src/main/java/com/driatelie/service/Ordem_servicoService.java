@@ -32,9 +32,7 @@ public class Ordem_servicoService {
     }
 
     public List<Ordem_servico> getOrdem_servicosByData(LocalDate data) {
-        return ordem_servicoRepository.findAll().stream()
-                .filter(os -> os.getData().equals(data))
-                .toList();
+        return ordem_servicoRepository.findByData(data);
     }
 
     public Ordem_servico saveOrdem_servico(Ordem_servico ordem_servico) {

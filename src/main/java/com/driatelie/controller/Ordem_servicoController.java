@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
@@ -42,6 +41,21 @@ public class Ordem_servicoController {
             return ResponseEntity.ok(ordem_servicos);
         } else {
             return ResponseEntity.status(404).body("Ordem de serviço não encontrada");
+        }
+    }
+
+    @GetMapping("/data/{data}")
+    public ResponseEntity<?> findByData(@PathVariable String data) {
+        try {
+            java.time.LocalDate dataParsed = java.time.LocalDate.parse(data);
+            List<Ordem_servico> ordem_servicos = ordem_servicoService.getOrdem_servicosByData(dataParsed);
+            if (!ordem_servicos.isEmpty()) {
+                return ResponseEntity.ok(ordem_servicos);
+            } else {
+                return ResponseEntity.status(404).body("Nenhuma ordem de serviço encontrada para a data especificada");
+            }
+        } catch (java.time.format.DateTimeParseException ex) {
+            return ResponseEntity.badRequest().body("Formato de data inválido. Use yyyy-MM-dd");
         }
     }
     

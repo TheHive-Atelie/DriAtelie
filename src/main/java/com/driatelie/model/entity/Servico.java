@@ -23,7 +23,7 @@ public class Servico {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id_servicos;
     @Column(name = "nome_tipo_servico", length = 25, nullable = false)
-    private String nome_tipo_servico;
+    private String nomeTipoServico;
     @Column(name = "preco", length = 4, nullable = false)
     private int preco;
     @Column(name = "tempo_estimado", length = 3)

@@ -25,8 +25,8 @@ public class ServicoService {
     }
 
     // Busca serviço por nome (ou parte do nome)
-    public List<Servico> getNomeServico(String nomeServico) {
-        return servicoRepository.findByNomeTipoServicoContainingIgnoreCase(nomeServico);
+    public List<Servico> getNomeServico(String nome) {
+        return servicoRepository.findByNomeTipoServicoContainingIgnoreCase(nome);
     }
 
     // Salva (cria ou atualiza) um serviço

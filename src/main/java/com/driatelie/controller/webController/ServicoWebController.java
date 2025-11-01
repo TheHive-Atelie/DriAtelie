@@ -31,7 +31,7 @@ public class ServicoWebController {
     @GetMapping("/novo")
     public String novoServico(Model model) {
         model.addAttribute("servico", new Servico());
-        return "servicos/form-servico"; // View: templates/servicos/form-servico.html
+        return "servicos/form-servico"; 
     }
 
     //editar serviço existente

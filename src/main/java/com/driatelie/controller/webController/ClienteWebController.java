@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +19,6 @@ import com.driatelie.service.ClienteService;
 
 @Controller
 @RequestMapping("/web/clientes")
-@CrossOrigin(origins = "http://localhost:5173")
 
 public class ClienteWebController {
 
@@ -42,7 +40,7 @@ public class ClienteWebController {
         model.addAttribute("clientes", clientes);
         model.addAttribute("filtroNome", nome);
 
-        return "clientes/lista-clientes";
+        return "lista_clientes";
     }
 
     // lógica para criar um novo cliente

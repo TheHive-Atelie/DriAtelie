@@ -1,5 +1,177 @@
-body {
-  font-family: "Inter", Arial, sans-serif;
-  margin: 0;
-  background: #f5f5f5;
+* {
+  --bg-color: #f5f5f5;
+  --white: #ffffff;
+  --sidebar-bg: #3f3f3f;     
+  --muted-gray: #9a9a9a;     
+  --text-color: #222222;
+  --accent-green: #3bb04a;   
+  --border: #e6e6e6;
+  --header-height: 72px;
+  box-sizing: border-box;
 }
+
+body {
+  margin: 0;
+  font-family: "Inter", Arial, sans-serif;
+  background: var(--bg-color);
+  color: var(--text-color);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+}
+
+.container-sidebar {
+  width: 18%;
+  background: var(--sidebar-bg);
+  color: var(--white);
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.container-sidebar .sidebar-logo {
+  font-weight: 700;
+  font-size: 20px;
+  opacity: 0.95;
+}
+
+.main-area {
+  flex: 1 1 auto;
+  width: auto;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page-header {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--white);
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+}
+
+/* bloco esquerdo com título e abas */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* título principal menor para caber no espaço */
+.header-title {
+  margin: 0;
+  font-size: 18px; /* reduzi conforme solicitado */
+  font-weight: 700;
+  color: var(--text-color);
+  padding-bottom: 6px;
+  border-bottom: 3px solid #222; /* linha decorativa sob o título ativo */
+}
+
+/* abas ao lado do título */
+.header-tabs {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.header-tabs .tab {
+  background: transparent;
+  border: none;
+  color: var(--muted-gray);
+  font-size: 15px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.header-tabs .tab.active {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+/* bloco direito com marca e avatar */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 160px;
+  justify-content: flex-end;
+}
+.header-right .brand {
+  color: var(--text-color);
+  font-weight: 600;
+}
+.header-right .avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #cfcfcf;
+  border: 2px solid #e9e9e9;
+}
+
+/* Search bar (separada do header) */
+.search-bar {
+  background: rgba(0,0,0,0.03);
+  padding: 12px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.search-label {
+  color: var(--muted-gray);
+  font-size: 14px;
+  min-width: 140px;
+}
+.search-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+.search-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--white);
+}
+.icon-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+.btn {
+  border-radius: 6px;
+  padding: 9px 12px;
+  border: 1px solid rgba(0,0,0,0.08);
+  cursor: pointer;
+  background: var(--white);
+}
+.filter-btn { color: var(--text-color); }
+.add-btn {
+  background: var(--accent-green);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+}
+
+/* container de conteúdo que segue abaixo (apenas placeholder) */
+.page-content {
+  padding: 18px 22px;
+  background: transparent;
+  flex: 1 1 auto;
+  min-height: 300px;
+}
+/* ...existing code... */

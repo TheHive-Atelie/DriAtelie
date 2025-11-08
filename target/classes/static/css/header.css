@@ -1,0 +1,145 @@
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+}
+
+.main-area {
+  flex: 1 1 auto;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Cabeçalho */
+.page-header {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--white);
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-color);
+  padding-bottom: 6px;
+  border-bottom: 3px solid var(--text-color);
+}
+
+.header-tabs {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.header-tabs .tab {
+  background: transparent;
+  border: none;
+  color: var(--muted-gray);
+  font-size: 15px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.header-tabs .tab.active {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 160px;
+  justify-content: flex-end;
+}
+
+.header-right .brand {
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.header-right .avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #cfcfcf;
+  border: 2px solid #e9e9e9;
+}
+
+.search-bar {
+  background: rgba(0,0,0,0.03);
+  padding: 12px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.search-label {
+  color: var(--muted-gray);
+  font-size: 14px;
+  min-width: 120px; /* reduzido para aproximar mais */
+  margin-right: 6px;
+}
+.search-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* menor gap para aproximar input e lupa */
+  flex: 1;
+}
+.search-input {
+  flex: 1;
+  max-width: 480px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--white);
+}
+.icon-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn i { font-size: 14px; }
+
+.btn {
+  border-radius: 6px;
+  padding: 9px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  background: var(--white);
+}
+
+.filter-btn { color: var(--text-color); }
+
+.add-btn {
+  background: var(--accent-green);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+}
+
+.page-content {
+  padding: 18px 22px;
+  flex: 1 1 auto;
+}

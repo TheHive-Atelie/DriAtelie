@@ -1,67 +1,114 @@
-.header {
-  border-bottom: 1px solid #e0e0e0;
-  width: 100vh;
+/* Header e Search já definidos em header.css 
+
+================================================== */
+
+.page-content {
+  padding: 0;
+  background: var(--white);
 }
 
-.header .title-page {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #000;
-  position: relative;
-  padding-bottom: 0.5rem;
-}
-
-.header .title-page::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
+.clients-table {
   width: 100%;
-  max-width: 180px;
-  height: 2px;
-  background: #000;
+  border-collapse: collapse;
 }
 
-.header h2 {
-  font-size: 1rem;
-  color: #666;
-  font-weight: 400;
+/* header/row layout */
+.table-header {
+  display: flex;
+  background: var(--bg-color);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+  align-items: center;
 }
 
-/* A partir daqui é barra de pesquisa e etc */
-.search-container {
+.table-row {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+  align-items: center;
+}
+
+.checkbox-cell {
+  width: 48px;
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-top: 0.8rem;
+  justify-content: center;
+  padding: 0 8px;
 }
 
-.search-input {
+.header-cell, .cell {
   flex: 1;
-  padding: 0.5rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.9rem;
-}
-
-.filter-button {
-  padding: 0.5rem 1rem;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  color: #666;
+  padding: 0 12px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
 }
 
-.add-client-button {
-  padding: 0.5rem 1rem;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
+/* coluna de nome com id abaixo */
+.client-info {
+  flex-direction: column;
+  align-items: flex-start;
+}
+.client-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-color);
+}
+.client-id {
+  font-size: 12px;
+  color: var(--muted-gray);
+  margin-top: 6px;
+}
+
+/* botões */
+.service-list-btn {
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-color);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* ações: botões maiores com ícone */
+.actions {
   display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.action-btn {
+  width: 44px;
+  height: 36px;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  background: var(--white);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform .08s ease, box-shadow .08s ease;
+  font-size: 16px;
+  color: var(--text-color);
+}
+.action-btn i { font-size: 18px; }
+.action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+}
+
+.edit { color: #2d6cdf; }
+.delete { color: #c62828; }
+
+/* hover da linha */
+.table-row:hover {
+  background: rgba(0,0,0,0.02);
+}
+
+/* Checkbox */
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border);
+  border-radius: 3px;
+  cursor: pointer;
 }

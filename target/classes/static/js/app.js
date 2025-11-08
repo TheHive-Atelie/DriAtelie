@@ -1,26 +1,28 @@
-import { AppHeader } from './components/header.js';
+import { AppSidebar } from './components/sidebar.js';
+import { ListaClientes } from './components/lista_clientes.js';
 
 const app = Vue.createApp({
   components: {
-    'app-header': AppHeader
+    'app-sidebar': AppSidebar,
+    'lista-clientes': ListaClientes
   },
   
   data() {
     return {
-      telaAtual: 'home',
-      // clientes: clientesData
+      telaAtual: 'home'
     }
   },
     
-    methods: {
+  methods: {
     mudarTela(tela) {
       this.telaAtual = tela;
     }
-},
+  },
 
   template: `
-    <div class="container">
-        <app-header></app-header>
+    <div class="app-shell">
+      <app-sidebar></app-sidebar>
+      <lista-clientes></lista-clientes>
     </div>
   `
 });

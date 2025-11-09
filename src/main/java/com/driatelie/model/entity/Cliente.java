@@ -1,6 +1,7 @@
 package com.driatelie.model.entity;
 
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -36,7 +37,8 @@ private String telefone_cliente;
 private String email_cliente;
 
 @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
-private List<OrdemServico> ordensServico;
+	@JsonManagedReference
+	private List<Ordem_servico> ordensServico;
 
 }
 // CREATE TABLE `clientes` (

@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +26,7 @@ import lombok.Setter;
 @AllArgsConstructor
 
 
-public class OrdemServico {    
+public class Ordem_servico {    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idordens_de_servico")
@@ -34,7 +35,8 @@ public class OrdemServico {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cliente", nullable = false, 
                 foreignKey = @ForeignKey(name = "fk_ordem_servico_cliente"))
-    private Cliente cliente;
+  @JsonBackReference
+  private Cliente cliente;
     
     @Column(name = "data")
     private LocalDate data;

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.driatelie.model.entity.Cliente;
-import com.driatelie.model.entity.OrdemServico;
+import com.driatelie.model.entity.Ordem_servico;
 import com.driatelie.service.ClienteService;
 
 @Controller
@@ -95,7 +95,7 @@ public class ClienteWebController {
             Cliente cliente = clienteService.getClienteById(id)
                     .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
 
-            List<OrdemServico> ordens = clienteService.getOrdensServicoByClienteId(id);
+            List<Ordem_servico> ordens = clienteService.getOrdensServicoByClienteId(id);
 
             if (ordens.isEmpty()) {
                 model.addAttribute("mensagemInfo", "Este cliente não possui ordens de serviço.");

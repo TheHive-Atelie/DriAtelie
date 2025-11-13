@@ -2,7 +2,6 @@ package com.driatelie.model.entity;
 
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,7 +34,7 @@ private String telefone_cliente;
 @Column(name = "email_cliente")
 private String email_cliente;
 
-@OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+@OneToMany(mappedBy = "cliente")
 private List<OrdemServico> ordensServico;
 
 }

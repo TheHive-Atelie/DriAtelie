@@ -1,24 +1,26 @@
-/* Header e Search já definidos em header.css 
-
-================================================== */
-
 .page-content {
   padding: 0;
   background: var(--white);
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 .clients-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
+  overflow: hidden;
 }
 
-/* header/row layout */
 .table-header {
   display: flex;
   background: var(--bg-color);
   border-bottom: 1px solid var(--border);
   padding: 12px 0;
   align-items: center;
+  width: 100%;
+  max-width: 100%;
 }
 
 .table-row {
@@ -26,10 +28,14 @@
   border-bottom: 1px solid var(--border);
   padding: 16px 0;
   align-items: center;
+  width: 100%;
+  overflow: hidden;
 }
 
 .checkbox-cell {
   width: 48px;
+  min-width: 48px;
+  flex: 0 0 48px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -37,29 +43,67 @@
 }
 
 .header-cell, .cell {
-  flex: 1;
   padding: 0 12px;
   display: flex;
   align-items: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  min-width: 0;
 }
 
-/* coluna de nome com id abaixo */
+.header-cell:nth-child(2), .cell:nth-child(2) {
+  flex: 1.2;
+  min-width: 180px;
+}
+
+.header-cell:nth-child(3), .cell:nth-child(3) {
+  flex: 0.75;
+  min-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-cell:nth-child(4), .cell:nth-child(4) {
+  flex: 0.95;
+  min-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-cell:nth-child(5), .cell:nth-child(5) {
+  flex: 0.72;
+  min-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .client-info {
+  display: flex;
   flex-direction: column;
   align-items: flex-start;
+  overflow: hidden;
+  width: 100%;
 }
+
 .client-name {
   font-weight: 600;
   font-size: 15px;
   color: var(--text-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
 }
+
 .client-id {
   font-size: 12px;
   color: var(--muted-gray);
   margin-top: 6px;
 }
 
-/* botões */
 .service-list-btn {
   padding: 8px 14px;
   background: transparent;
@@ -68,17 +112,24 @@
   color: var(--text-color);
   font-size: 13px;
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* ações: botões maiores com ícone */
 .actions {
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  align-items: center;
   justify-content: flex-end;
+  flex-shrink: 0;
 }
+
 .action-btn {
-  width: 44px;
-  height: 36px;
+  width: 48px;
+  height: 40px;
+  min-width: 48px;
+  min-height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -87,28 +138,47 @@
   border-radius: 6px;
   cursor: pointer;
   transition: transform .08s ease, box-shadow .08s ease;
-  font-size: 16px;
+  font-size: 18px;
   color: var(--text-color);
+  flex-shrink: 0;
 }
-.action-btn i { font-size: 18px; }
+
+.action-btn i {
+  font-size: 18px;
+}
+
 .action-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 14px rgba(0,0,0,0.06);
 }
 
-.edit { color: #2d6cdf; }
-.delete { color: #c62828; }
+.edit {
+  color: #2d6cdf;
+}
 
-/* hover da linha */
+.delete {
+  color: #c62828;
+}
+
 .table-row:hover {
   background: rgba(0,0,0,0.02);
 }
 
-/* Checkbox */
 input[type="checkbox"] {
   width: 16px;
   height: 16px;
   border: 2px solid var(--border);
   border-radius: 3px;
   cursor: pointer;
+}
+
+.header-cell.actions-cell, .cell.actions-cell {
+  flex: 0 0 auto;
+  min-width: 150px;
+  max-width: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 12px;
+  overflow: visible;
 }

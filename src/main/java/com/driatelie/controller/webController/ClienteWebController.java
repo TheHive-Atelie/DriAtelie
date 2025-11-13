@@ -40,7 +40,7 @@ public class ClienteWebController {
         model.addAttribute("clientes", clientes);
         model.addAttribute("filtroNome", nome);
 
-        return "lista_clientes";
+        return "app";
     }
 
     // lógica para criar um novo cliente

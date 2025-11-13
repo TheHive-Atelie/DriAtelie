@@ -1,4 +1,4 @@
-export const ListaClientes = {
+export const Clientes = {
   template: `
     <div class="main-area">
       <header class="page-header">

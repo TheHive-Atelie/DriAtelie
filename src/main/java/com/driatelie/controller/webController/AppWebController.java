@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/web")
 public class AppWebController {
 
-    @GetMapping({"/", "/servicos", "/comandas", "/financas"})
+    @GetMapping({"/", "/comandas", "/financas"})
     public String index() {
-        return "lista_clientes";
+        return "app";
     }
 
 }

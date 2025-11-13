@@ -9,8 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-
 @Controller
 @RequestMapping("/web/servicos")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -22,9 +20,7 @@ public class ServicoWebController {
     //listar todos os serviços
     @GetMapping
     public String listarServicos(Model model) {
-        List<Servico> servicos = servicoService.getAll();
-        model.addAttribute("servicos", servicos);
-        return "servicos/lista-servicos"; // View: templates/servicos/lista-servicos.html
+        return "app";
     }
 
     //adicionando novo serviço via formulário

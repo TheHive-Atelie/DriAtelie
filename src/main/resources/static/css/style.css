@@ -1,0 +1,25 @@
+* {
+  --bg-color: #f5f5f5;
+  --white: #ffffff;
+  --sidebar-bg: #3f3f3f;
+  --muted-gray: #9a9a9a;
+  --text-color: #222222;
+  --accent-green: #3bb04a;
+  --border: #e6e6e6;
+  --header-height: 72px;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", Arial, sans-serif;
+  background: var(--bg-color);
+  color: var(--text-color);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

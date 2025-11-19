@@ -24,27 +24,22 @@ import lombok.Setter;
 
 public class Cliente {
     
-@Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-@Column(name = "id_cliente")
-private Integer id;
-@Column(name = "nome_cliente", nullable = false)
-private String nome;
-@Column(name = "telefone_cliente")
-private String telefone_cliente;
-@Column(name = "email_cliente")
-private String email_cliente;
-
-@OneToMany(mappedBy = "cliente")
-	@JsonManagedReference
-	private List<Ordem_servico> ordensServico;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_cliente")
+    private Integer id;
+    
+    @Column(name = "nome_cliente", nullable = false, length = 45)
+    private String nomeCliente;
+    
+    @Column(name = "telefone_cliente", length = 45)
+    private String telefoneCliente;
+    
+    @Column(name = "email_cliente", length = 45)
+    private String emailCliente;
+    
+    @OneToMany(mappedBy = "cliente")
+    @JsonManagedReference
+    private List<Ordem_servico> ordensServico;
 
 }
-// CREATE TABLE `clientes` (
-// `idclientes` int NOT NULL AUTO_INCREMENT,
-// `nome_cliente` varchar(45) NOT NULL,
-// `telefone_cliente` varchar(45) DEFAULT NULL,
-// `email_cliente` varchar(45) DEFAULT NULL,
-// `ordens_servico` int DEFAULT NULL,
-// PRIMARY KEY (`idclientes`)
-// ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

@@ -21,25 +21,22 @@ import lombok.Setter;
 public class Saida {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer  idsaida;
+    private Integer  idSaida;
     @Column(name = "nome_saida", nullable = false)
-    private String nome_saida;
+    private String nomeSaida;
     @Column(name = "data")
     private String data;
-    @Column(name = "valor", nullable = false)
+    @Column(name = "valor")
     private int valor;
     @Column(name = "obs")
     private String obs;
 }
 
-/*
- * CREATE TABLE `saidas` (
- * `idsaida` int NOT NULL,
- * `nome_saida` varchar(45) NOT NULL,
- * `data` varchar(45) DEFAULT NULL,
- * `valor` int NOT NULL,
- * `obs` varchar(350) DEFAULT NULL,
- * PRIMARY KEY (`idsaida`)
- * ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
- * COMMENT='tablea que representa o controle financeiro do atelie';
- */
+// CREATE TABLE `saidas` (
+//   `id_saida` int NOT NULL,
+//   `nome_saida` varchar(45) NOT NULL,
+//   `data` varchar(45) DEFAULT NULL,
+//   `valor` int NOT NULL,
+//   `obs` varchar(350) DEFAULT NULL,
+//   PRIMARY KEY (`idsaída`)
+// ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='tablea que representa o controle financeiro do atelie'

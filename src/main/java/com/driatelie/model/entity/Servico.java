@@ -21,16 +21,15 @@ public class Servico {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_servicos;
-    @Column(name = "nome_tipo_servico", length = 25, nullable = false)
+    private Integer idServicos;
+    @Column(name = "nome_tipo_servico", nullable = false)
     private String nomeTipoServico;
-    @Column(name = "preco", length = 4, nullable = false)
+    @Column(name = "preco", nullable = false)
     private int preco;
-    @Column(name = "tempo_estimado", length = 3)
-    private int tempo_estimado;
+    @Column(name = "tempo_estimado")
+    private int tempoEstimado;
 
 }
-
 // create table servicos(
 // id_servicos INT AUTO_INCREMENT PRIMARY KEY,
 // nome_tipo_servico VARCHAR(25) NOT NULL, 

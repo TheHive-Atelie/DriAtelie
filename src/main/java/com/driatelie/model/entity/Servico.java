@@ -26,13 +26,13 @@ public class Servico {
     private String nomeTipoServico;
     @Column(name = "preco", length = 4, nullable = false)
     private int preco;
-    @Column(name = "tempo_estimado", length = 3)
-    private int tempo_estimado;
+    @Column(name = "tempo_estimado", nullable = true)
+    private int tempoEstimado;
 
 }
 
 // create table servicos(
 // id_servicos INT AUTO_INCREMENT PRIMARY KEY,
-// nome_tipo_servico VARCHAR(25) NOT NULL, 
+// nome_tipo_servico VARCHAR(25) NOT NULL,
 // preco INT(4) NOT NULL,
 // tempo_estimado INT(3));

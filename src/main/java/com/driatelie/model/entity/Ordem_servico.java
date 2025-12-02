@@ -12,7 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,7 +35,9 @@ public class Ordem_servico {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cliente", nullable = false, 
                 foreignKey = @ForeignKey(name = "fk_ordem_servico_cliente"))
-  @JsonBackReference
+  // Include cliente information when serializing Ordem_servico, but avoid serializing the cliente's
+  // `ordensServico` back-reference to prevent infinite recursion.
+  @JsonIgnoreProperties({"ordensServico"})
   private Cliente cliente;
     
     @Column(name = "data")

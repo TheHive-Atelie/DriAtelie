@@ -1,6 +1,7 @@
 package com.driatelie.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.driatelie.model.entity.Ordem_servico;
+import com.driatelie.dto.OrdemServicoDTO;
 import com.driatelie.service.Ordem_servicoService;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,16 +31,18 @@ public class Ordem_servicoController {
     private Ordem_servicoService ordem_servicoService;
 
     @GetMapping
-    public ResponseEntity<List<Ordem_servico>> listAll() {
+    public ResponseEntity<List<OrdemServicoDTO>> listAll() {
         List<Ordem_servico> ordem_servicos = ordem_servicoService.listAll();
-        return ResponseEntity.ok(ordem_servicos);
-    }   
+        List<OrdemServicoDTO> dto = ordem_servicos.stream().map(this::toDto).collect(Collectors.toList());
+        return ResponseEntity.ok(dto);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> findByIs(@PathVariable Integer id) {
         List<Ordem_servico> ordem_servicos = ordem_servicoService.getOrdem_servicosById(id);
         if (!ordem_servicos.isEmpty()) {
-            return ResponseEntity.ok(ordem_servicos);
+            List<OrdemServicoDTO> dto = ordem_servicos.stream().map(this::toDto).collect(Collectors.toList());
+            return ResponseEntity.ok(dto);
         } else {
             return ResponseEntity.status(404).body("Ordem de serviço não encontrada");
         }
@@ -50,7 +54,8 @@ public class Ordem_servicoController {
             java.time.LocalDate dataParsed = java.time.LocalDate.parse(data);
             List<Ordem_servico> ordem_servicos = ordem_servicoService.getOrdem_servicosByData(dataParsed);
             if (!ordem_servicos.isEmpty()) {
-                return ResponseEntity.ok(ordem_servicos);
+                List<OrdemServicoDTO> dto = ordem_servicos.stream().map(this::toDto).collect(Collectors.toList());
+                return ResponseEntity.ok(dto);
             } else {
                 return ResponseEntity.status(404).body("Nenhuma ordem de serviço encontrada para a data especificada");
             }
@@ -68,7 +73,6 @@ public class Ordem_servicoController {
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().build();
         } catch (Exception ex) {
-            // Could log the exception
             return ResponseEntity.status(500).build();
         }
     }
@@ -84,7 +88,6 @@ public class Ordem_servicoController {
             } catch (IllegalArgumentException ex) {
                 return ResponseEntity.badRequest().body(ex.getMessage());
             } catch (Exception ex) {
-                // Could log the exception
                 return ResponseEntity.status(500).build();
             }
         } else {
@@ -102,4 +105,29 @@ public class Ordem_servicoController {
             return ResponseEntity.status(404).body("Ordem de serviço não encontrada");
         }
     }   
+
+    // map entity to safe DTO for JSON serialization
+    private OrdemServicoDTO toDto(Ordem_servico o) {
+        Integer clienteId = null;
+        String clienteNome = null;
+        try {
+            if (o.getCliente() != null) {
+                clienteId = o.getCliente().getId();
+                clienteNome = o.getCliente().getNome();
+            }
+        } catch (Exception ex) {
+            // in case proxy/LAZY causes issues, fall back to nulls
+        }
+
+        return new OrdemServicoDTO(
+            o.getId(),
+            clienteId,
+            clienteNome,
+            o.getData(),
+            o.getValorTotal(),
+            o.getSinal(),
+            o.getTipoPagamento(),
+            o.getObservacoes()
+        );
+    }
 }

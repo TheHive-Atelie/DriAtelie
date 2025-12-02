@@ -233,3 +233,20 @@
 .save-btn:hover {
   background: #0056b3;
 }
+
+.table-header {
+  display: flex;
+  background: var(--bg-color);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+}
+.page-content {
+  padding: 0;
+  background: var(--white);
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}

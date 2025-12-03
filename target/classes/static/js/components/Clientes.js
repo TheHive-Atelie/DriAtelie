@@ -18,7 +18,19 @@ export const Clientes = {
   },
   mounted() {
     this.fetchClients();
+
+    //Castro
+    const tabs = document.querySelectorAll('.tab');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+
+        tab.classList.add('active');
+      });
+    });
   },
+
   methods: {
     async fetchClients() {
       this.loading = true;
@@ -121,7 +133,6 @@ export const Clientes = {
     <div class="main-area">
       <header class="page-header">
         <div class="header-left">
-          <h1 class="header-title">Listagem de clientes</h1>
           <nav class="header-tabs">
             <button class="tab active">Listagem de clientes</button>
             <button class="tab">Lista de espera</button>

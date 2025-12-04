@@ -1,6 +1,7 @@
 package com.driatelie.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -59,6 +60,18 @@ public class Ordem_servicoController {
         }
     }
     
+    @GetMapping("/cliente/{clienteId}")
+    public ResponseEntity<?> findByClienteId(@PathVariable Integer clienteId) {
+        try {
+            List<Ordem_servico> all = ordem_servicoService.listAll();
+            List<Ordem_servico> filtered = all.stream()
+                .filter(os -> os.getCliente() != null && clienteId.equals(os.getCliente().getId()))
+                .collect(Collectors.toList());
+            return ResponseEntity.ok(filtered);
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body("Erro ao buscar ordens de serviço por cliente");
+        }
+    }
     
     @PostMapping
     public ResponseEntity<Ordem_servico> newOrdem_servico(@RequestBody Ordem_servico ordem_servico) {

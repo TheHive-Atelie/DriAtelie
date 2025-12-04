@@ -13,11 +13,60 @@ export const Clientes = {
       deleteConfirmOpen: false,
       deleteConfirmId: null,
       loading: false,
-      error: null
+      error: null,
+
+      // Search and filters
+      searchQuery: '',
+      filtersOpen: false,
+      filters: {
+        id: '',
+        nome: '',
+        email: '',
+        telefone: ''
+      },
+
+      // Serviços popups
+      servicesModalOpen: false,
+      servicesLoading: false,
+      servicesError: null,
+      selectedClient: null,
+      ordens: [],
+      osDetailModalOpen: false,
+      selectedOS: null
     };
   },
   mounted() {
     this.fetchClients();
+  },
+  computed: {
+    filteredClients() {
+      const byName = (c) =>
+        this.searchQuery
+          ? String(c.nome || '').toLowerCase().includes(this.searchQuery.toLowerCase())
+          : true;
+
+      const byId = (c) =>
+        this.filters.id !== ''
+          ? String(c.id || '').includes(String(this.filters.id).trim())
+          : true;
+
+      const byNome = (c) =>
+        this.filters.nome
+          ? String(c.nome || '').toLowerCase().includes(this.filters.nome.toLowerCase())
+          : true;
+
+      const byEmail = (c) =>
+        this.filters.email
+          ? String(c.email_cliente || '').toLowerCase().includes(this.filters.email.toLowerCase())
+          : true;
+
+      const byTelefone = (c) =>
+        this.filters.telefone
+          ? String(c.telefone_cliente || '').toLowerCase().includes(this.filters.telefone.toLowerCase())
+          : true;
+
+      return this.clients.filter((c) => byName(c) && byId(c) && byNome(c) && byEmail(c) && byTelefone(c));
+    }
   },
   methods: {
     async fetchClients() {
@@ -114,6 +163,53 @@ export const Clientes = {
       } catch (err) {
         this.error = 'Erro ao deletar cliente: ' + err.message;
       }
+    },
+
+    // Filters modal
+    openFilters() {
+      this.filtersOpen = true;
+    },
+    closeFilters() {
+      this.filtersOpen = false;
+    },
+    applyFilters() {
+      this.filtersOpen = false;
+    },
+    clearFilters() {
+      this.filters = { id: '', nome: '', email: '', telefone: '' };
+    },
+
+    // Serviços modals
+    async openServiceList(client) {
+      this.selectedClient = client;
+      this.servicesModalOpen = true;
+      this.servicesLoading = true;
+      this.servicesError = null;
+      this.ordens = [];
+      try {
+        const resp = await fetch(`/os/cliente/${client.id}`);
+        if (!resp.ok) throw new Error(`Erro ao carregar ordens de serviço: ${resp.status}`);
+        const data = await resp.json();
+        this.ordens = Array.isArray(data) ? data : [];
+      } catch (e) {
+        this.servicesError = e.message;
+      } finally {
+        this.servicesLoading = false;
+      }
+    },
+    closeServiceList() {
+      this.servicesModalOpen = false;
+      this.selectedClient = null;
+      this.ordens = [];
+      this.servicesError = null;
+    },
+    openOSDetail(os) {
+      this.selectedOS = os;
+      this.osDetailModalOpen = true;
+    },
+    closeOSDetail() {
+      this.osDetailModalOpen = false;
+      this.selectedOS = null;
     }
   },
   
@@ -124,10 +220,8 @@ export const Clientes = {
           <h1 class="header-title">Listagem de clientes</h1>
           <nav class="header-tabs">
             <button class="tab active">Listagem de clientes</button>
-            <button class="tab">Lista de espera</button>
           </nav>
         </div>
-
         <div class="header-right">
           <div class="brand">DRI'AH</div>
           <div class="avatar"></div>
@@ -138,12 +232,12 @@ export const Clientes = {
         <label class="search-label">Pesquisar cliente:</label>
         <div class="search-controls">
           <div class="left-group">
-            <input class="search-input" type="text" placeholder="Comece a digitar...">
+            <input class="search-input" v-model="searchQuery" type="text" placeholder="Comece a digitar...">
             <button class="icon-btn search-btn" aria-label="Buscar"><i class="fa fa-search"></i></button>
           </div>
 
           <div class="right-group">
-            <button class="btn filter-btn"><i class="fa fa-filter"></i>&nbsp;Mais filtros</button>
+            <button class="btn filter-btn" @click="openFilters"><i class="fa fa-filter"></i>&nbsp;Mais filtros</button>
             <button class="btn add-btn" @click="openAdd"><i class="fa fa-plus"></i>&nbsp;Adicionar cliente</button>
           </div>
         </div>
@@ -153,7 +247,7 @@ export const Clientes = {
 
       <section class="page-content">
         <div v-if="loading" class="loading-message">Carregando clientes...</div>
-        <div v-else-if="clients.length === 0" class="empty-message">Nenhum cliente encontrado</div>
+        <div v-else-if="filteredClients.length === 0" class="empty-message">Nenhum cliente encontrado</div>
         
         <div v-else class="clients-table">
           <div class="table-header">
@@ -165,7 +259,7 @@ export const Clientes = {
             <div class="header-cell actions-cell">Ações</div>
           </div>
 
-          <div v-for="client in clients" :key="client.id" class="table-row">
+          <div v-for="client in filteredClients" :key="client.id" class="table-row">
             <div class="checkbox-cell"><input type="checkbox"></div>
 
             <div class="cell client-info">
@@ -176,7 +270,7 @@ export const Clientes = {
             <div class="cell">{{ client.telefone_cliente || '-' }}</div>
             <div class="cell">{{ client.email_cliente || '-' }}</div>
             <div class="cell">
-              <button class="service-list-btn">Lista de serviços</button>
+              <button class="service-list-btn" @click="openServiceList(client)">Lista de serviços</button>
             </div>
 
             <div class="cell actions-cell">
@@ -186,10 +280,10 @@ export const Clientes = {
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
+      <!-- Add/Edit modal -->
       <div v-if="modalOpen" class="modal-backdrop" @click.self="closeModal">
         <div class="modal">
           <h2 class="modal-title" v-if="modalMode==='add'">Adicionar Cliente</h2>
@@ -211,6 +305,7 @@ export const Clientes = {
         </div>
       </div>
 
+      <!-- Delete confirm modal -->
       <div v-if="deleteConfirmOpen" class="modal-backdrop" @click.self="closeDeleteConfirm">
         <div class="modal delete-confirm-modal">
           <h2 class="modal-title delete-title">Excluir Cliente</h2>
@@ -219,6 +314,82 @@ export const Clientes = {
           <div class="modal-actions">
             <button class="btn cancel-btn" @click="closeDeleteConfirm">Cancelar</button>
             <button class="btn delete-confirm-btn" @click="confirmDelete">Excluir</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters modal -->
+      <div v-if="filtersOpen" class="modal-backdrop" @click.self="closeFilters">
+        <div class="modal filters-modal">
+          <h2 class="modal-title">Filtros de pesquisa</h2>
+          <div class="filters-grid">
+            <div class="filters-col">
+              <h3 class="filters-subtitle">CLIENTE</h3>
+              <label>Id</label>
+              <input class="modal-input" v-model="filters.id" type="text" placeholder="Id">
+              <label>Nome</label>
+              <input class="modal-input" v-model="filters.nome" type="text" placeholder="Nome">
+            </div>
+            <div class="filters-col">
+              <h3 class="filters-subtitle">EMAIL</h3>
+              <label>Email</label>
+              <input class="modal-input" v-model="filters.email" type="text" placeholder="email@...">
+            </div>
+            <div class="filters-col">
+              <h3 class="filters-subtitle">TELEFONE</h3>
+              <label>Telefone</label>
+              <input class="modal-input" v-model="filters.telefone" type="text" placeholder="99 99999-9999">
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn cancel-btn" @click="clearFilters">Limpar</button>
+            <button class="btn add-btn" @click="applyFilters">Aplicar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Services list modal -->
+      <div v-if="servicesModalOpen" class="modal-backdrop" @click.self="closeServiceList">
+        <div class="modal services-modal">
+          <h2 class="modal-title">Lista de Serviços</h2>
+          <p class="modal-subtitle" v-if="selectedClient">Cliente: {{ selectedClient.nome }} (#{{ selectedClient.id }})</p>
+          
+          <div v-if="servicesLoading" class="loading-message">Carregando ordens de serviço...</div>
+          <div v-else-if="servicesError" class="error-message">{{ servicesError }}</div>
+          <div v-else>
+            <div v-if="ordens.length === 0" class="empty-message">Nenhuma ordem de serviço para este cliente.</div>
+            <ul class="os-list">
+              <li v-for="os in ordens" :key="os.id" class="os-item">
+                <div class="os-info">
+                  <span class="os-title">OS #{{ os.id }}</span>
+                  <span class="os-date" v-if="os.data"> - {{ os.data }}</span>
+                </div>
+                <button class="btn view-btn" @click="openOSDetail(os)">Ver</button>
+              </li>
+            </ul>
+          </div>
+
+          <div class="modal-actions">
+            <button class="btn cancel-btn" @click="closeServiceList">Fechar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OS detail modal -->
+      <div v-if="osDetailModalOpen" class="modal-backdrop" @click.self="closeOSDetail">
+        <div class="modal os-detail-modal">
+          <h2 class="modal-title">Detalhes da Ordem de Serviço</h2>
+          <div v-if="selectedOS" class="os-detail-content">
+            <div class="detail-row"><strong>Id:</strong> {{ selectedOS.id }}</div>
+            <div class="detail-row" v-if="selectedOS.data"><strong>Data:</strong> {{ selectedOS.data }}</div>
+            <div class="detail-row" v-if="selectedOS.valorTotal != null"><strong>Valor total:</strong> {{ selectedOS.valorTotal }}</div>
+            <div class="detail-row" v-if="selectedOS.sinal != null"><strong>Sinal:</strong> {{ selectedOS.sinal }}</div>
+            <div class="detail-row" v-if="selectedOS.tipoPagamento"><strong>Tipo pagamento:</strong> {{ selectedOS.tipoPagamento }}</div>
+            <div class="detail-row" v-if="selectedOS.observacoes"><strong>Observações:</strong> {{ selectedOS.observacoes }}</div>
+            <div class="detail-row" v-if="selectedOS.idServicos != null"><strong>Serviço (id):</strong> {{ selectedOS.idServicos }}</div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn cancel-btn" @click="closeOSDetail">Fechar</button>
           </div>
         </div>
       </div>

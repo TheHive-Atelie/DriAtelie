@@ -35,8 +35,12 @@ public class Ordem_servico {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cliente", nullable = false, 
                 foreignKey = @ForeignKey(name = "fk_ordem_servico_cliente"))
-  @JsonBackReference
-  private Cliente cliente;
+    @JsonBackReference
+    private Cliente cliente;
+
+    // New: link to servicos table by id
+    @Column(name = "id_servicos", nullable = false)
+    private Integer idServicos;
     
     @Column(name = "data")
     private LocalDate data;

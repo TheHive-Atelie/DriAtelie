@@ -128,9 +128,10 @@ export const Servicos = {
     }
   },
   template: `
+  <div>
   <div class="services-crud">
     <!-- Cabeçalho -->
-    <div class="header">
+    <div class="header page-header">
       <h1>Listagem de serviços</h1>
       <div class="subtitle">Lista de serviços disponíveis</div>
     </div>
@@ -152,7 +153,6 @@ export const Servicos = {
     </div>
 
     <!-- Lista de serviços -->
-    <div class="services-list">
       <div class="list-header">
         <div class="checkbox-column"></div>
         <div class="name-column">Nome do serviço</div>
@@ -236,6 +236,7 @@ export const Servicos = {
         </form>
       </div>
     </div>
+  </div>
   </div>
   `
 };

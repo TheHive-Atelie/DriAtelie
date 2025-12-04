@@ -1,0 +1,9 @@
+.comandas-crud {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.id-column {
+  flex: 2;
+  font-weight: 500;
+}

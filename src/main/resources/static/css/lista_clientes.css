@@ -79,6 +79,13 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.header-cell:nth-child(11), .cell:nth-child(11) {
+  flex: 0.72;
+  min-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .client-info {
   display: flex;

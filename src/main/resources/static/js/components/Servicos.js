@@ -128,116 +128,95 @@ export const Servicos = {
     }
   },
   template: `
-  <div>
-  <div class="services-crud">
-    <!-- Cabeçalho -->
-    <div class="header page-header">
-      <h1>Listagem de serviços</h1>
-      <div class="subtitle">Lista de serviços disponíveis</div>
-    </div>
+<div class="page-content">
+    <div class="services-crud">
+        <!-- Cabeçalho -->
+        <div class="header page-header">
+            <h1>Listagem de serviços</h1>
+            <div class="subtitle">Lista de serviços disponíveis</div>
 
-    <!-- Barra de pesquisa e ações -->
-    <div class="actions-bar">
-      <div class="search-container">
-        <input 
-          type="text" 
-          v-model="searchQuery"
-          placeholder="Pesquisar serviços..." 
-          class="search-input"
-        />
-        <button class="search-btn">Q</button>
-      </div>
-      <button class="add-btn" @click="openAddModal">
-        Adicionar serviço
-      </button>
-    </div>
-
-    <!-- Lista de serviços -->
-      <div class="list-header">
-        <div class="checkbox-column"></div>
-        <div class="name-column">Nome do serviço</div>
-        <div class="price-column">Preço</div>
-        <div class="deadline-column">Prazo limite</div>
-        <div class="actions-column">Ações</div>
-      </div>
-
-      <div 
-        v-for="service in filteredServices" 
-        :key="service.id" 
-        class="service-item"
-      >
-        <div class="checkbox-column">
-          <input type="checkbox" v-model="service.selected" />
+            <div class="header-right">
+                <div class="brand">DRI'AH</div>
+                <div class="avatar"></div>
+            </div>
         </div>
-        <div class="name-column">{{ service.name }}</div>
-        <div class="price-column">R$ {{ service.price }}</div>
-        <div class="deadline-column">{{ service.deadline }} dias</div>
-        <div class="actions-column">
-          <button class="edit-btn" @click="openEditModal(service)">
-            Editar
-          </button>
-          <button class="delete-btn" @click="deleteService(service.id)">
-            Deletar
-          </button>
+
+        <!-- Barra de pesquisa e ações -->
+        <div class="actions-bar">
+            <div class="search-container">
+                <input type="text" v-model="searchQuery" placeholder="Pesquisar serviços..." class="search-input" />
+                <button class="search-btn">Q</button>
+            </div>
+            <button class="add-btn" @click="openAddModal">
+                Adicionar serviço
+            </button>
         </div>
-      </div>
+
+        <!-- Lista de serviços -->
+        <div class="servicos-table">
+            <div class="list-header">
+                <div class="checkbox-cell"><input class='checkbox-cell' type="hidden" /></div>
+                <div class="name-column header-cell">Nome do serviço</div>
+                <div class="price-column header-cell">Preço</div>
+                <div class="deadline-column header-cell">Prazo limite</div>
+                <div class="actions-column header-cell">Ações</div>
+            </div>
+
+            <div v-for="service in filteredServices" :key="service.id" class="service-item table-row">
+                <div class="checkbox-cell"><input type="checkbox" value="service.id"></div>
+
+                <div class="name-column cell servico-name">{{ service.name }}</div>
+                <div class="price-column cell">R$ {{ service.price }}</div>
+                <div class="deadline-column cell">{{ service.deadline }} dias</div>
+                <div class="actions-column actions cell">
+                    <button class="edit-btn action-btn" @click="openEditModal(service)">
+                        Editar
+                    </button>
+                    <button class="delete-btn action-btn" @click="deleteService(service.id)">
+                        Deletar
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Modal para adicionar/editar serviço -->
     <div v-if="showModal" class="modal-overlay" @click="closeModal">
-      <div class="modal-content" @click.stop>
-        <h2>{{ editingService ? 'Editar Serviço' : 'Adicionar Serviço' }}</h2>
-        
-        <form @submit.prevent="saveService">
-          <div class="form-group">
-            <label for="serviceName">Nome do serviço:</label>
-            <input
-              id="serviceName"
-              type="text"
-              v-model="formData.name"
-              required
-              placeholder="Digite o nome do serviço"
-            />
-          </div>
+        <div class="modal-content" @click.stop>
+            <h2>{{ editingService ? 'Editar Serviço' : 'Adicionar Serviço' }}</h2>
 
-          <div class="form-group">
-            <label for="servicePrice">Preço (R$):</label>
-            <input
-              id="servicePrice"
-              type="number"
-              step="0.01"
-              v-model="formData.price"
-              required
-              placeholder="0.00"
-              min="0"
-            />
-          </div>
+            <form @submit.prevent="saveService">
+                <div class="form-group">
+                    <label for="serviceName">Nome do serviço:</label>
+                    <input id="serviceName" type="text" v-model="formData.name" required
+                        placeholder="Digite o nome do serviço" />
+                </div>
 
-          <div class="form-group">
-            <label for="serviceDeadline">Prazo limite (dias):</label>
-            <input
-              id="serviceDeadline"
-              type="number"
-              v-model="formData.deadline"
-              required
-              placeholder="0"
-              min="1"
-            />
-          </div>
+                <div class="form-group">
+                    <label for="servicePrice">Preço (R$):</label>
+                    <input id="servicePrice" type="number" step="0.01" v-model="formData.price" required
+                        placeholder="0.00" min="0" />
+                </div>
 
-          <div class="modal-actions">
-            <button type="button" class="cancel-btn" @click="closeModal">
-              Cancelar
-            </button>
-            <button type="submit" class="save-btn">
-              {{ editingService ? 'Atualizar' : 'Salvar' }}
-            </button>
-          </div>
-        </form>
-      </div>
+                <div class="form-group">
+                    <label for="serviceDeadline">Prazo limite (dias):</label>
+                    <input id="serviceDeadline" type="number" v-model="formData.deadline" required placeholder="0"
+                        min="1" />
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" @click="closeModal">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="save-btn">
+                        {{ editingService ? 'Atualizar' : 'Salvar' }}
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-  </div>
-  </div>
+</div>
+</div>
   `
 };
 

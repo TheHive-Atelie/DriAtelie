@@ -3,6 +3,7 @@ package com.driatelie.controller;
 import com.driatelie.model.entity.Cliente;
 import com.driatelie.model.entity.Ordem_servico;
 import com.driatelie.service.ClienteService;
+import com.driatelie.dto.ClienteDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/clientes")
@@ -19,31 +21,33 @@ public class ClienteController {
     private ClienteService clienteService;
 
     @GetMapping
-    public ResponseEntity<List<Cliente>> listAll() {
+    public ResponseEntity<List<ClienteDTO>> listAll() {
         List<Cliente> clientes = clienteService.listAll();
-        return ResponseEntity.ok(clientes);
+        List<ClienteDTO> dto = clientes.stream().map(this::toDto).collect(Collectors.toList());
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> findById(@PathVariable Integer id) {
         Optional<Cliente> cliente = clienteService.getClienteById(id);
         if (cliente.isPresent()) {
-            return ResponseEntity.ok(cliente.get());
+            return ResponseEntity.ok(toDto(cliente.get()));
         } else {
             return ResponseEntity.status(404).body("Cliente não encontrado");
         }
     }
 
     @GetMapping("/nome/{nome}")
-    public ResponseEntity<List<Cliente>> findByName(@PathVariable String nome) {
+    public ResponseEntity<List<ClienteDTO>> findByName(@PathVariable String nome) {
         List<Cliente> clientes = clienteService.getByName(nome);
-        return ResponseEntity.ok(clientes);
+        List<ClienteDTO> dto = clientes.stream().map(this::toDto).collect(Collectors.toList());
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping
     public ResponseEntity<?> newCliente(@RequestBody Cliente cliente) {
         Cliente novoCliente = clienteService.saveCliente(cliente);
-        return ResponseEntity.status(201).body(novoCliente);
+        return ResponseEntity.status(201).body(toDto(novoCliente));
     }
 
     @PutMapping("/{id}")
@@ -52,7 +56,7 @@ public class ClienteController {
         if (clienteExistente.isPresent()) {
             clienteAtualizado.setId(id);
             Cliente atualizado = clienteService.saveCliente(clienteAtualizado);
-            return ResponseEntity.ok(atualizado);
+            return ResponseEntity.ok(toDto(atualizado));
         } else {
             return ResponseEntity.status(404).body("Cliente não encontrado");
         }
@@ -73,5 +77,14 @@ public class ClienteController {
     public ResponseEntity<List<Ordem_servico>> getOrdensDeServico(@PathVariable Integer id) {
         List<Ordem_servico> ordens = clienteService.getOrdensServicoByClienteId(id);
         return ResponseEntity.ok(ordens);
+    }
+
+    private ClienteDTO toDto(Cliente c) {
+        return new ClienteDTO(
+            c.getId(),
+            c.getNome(),
+            c.getTelefone_cliente(),
+            c.getEmail_cliente()
+        );
     }
 }

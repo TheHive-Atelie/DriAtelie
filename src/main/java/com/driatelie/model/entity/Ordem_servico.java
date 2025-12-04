@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import com.driatelie.model.entity.Servico;
 import jakarta.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -54,6 +55,15 @@ public class Ordem_servico {
     
     @Column(name = "obs", length = 350)
     private String observacoes;
+    
+    // link to the chosen service for this order. Database table contains an
+    // `id_servicos` foreign key column; map it here so inserts include the
+    // required value.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_servicos", nullable = false,
+          foreignKey = @ForeignKey(name = "fk_ordem_servico_servico"))
+    @JsonIgnoreProperties({})
+    private Servico servico;
     
     // // Método conveniente para obter o telefone do cliente
     // public String getTelefoneCliente() {

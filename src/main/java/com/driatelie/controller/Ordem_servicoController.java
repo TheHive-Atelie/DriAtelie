@@ -66,14 +66,37 @@ public class Ordem_servicoController {
     
     
     @PostMapping
-    public ResponseEntity<Ordem_servico> newOrdem_servico(@RequestBody Ordem_servico ordem_servico) {
+    public ResponseEntity<?> newOrdem_servico(@RequestBody OrdemServicoDTO dto) {
         try {
-            Ordem_servico novaOrdem_servico = ordem_servicoService.saveOrdem_servico(ordem_servico);
-            return ResponseEntity.status(201).body(novaOrdem_servico);
+            Ordem_servico ordem = new Ordem_servico();
+            Integer effectiveClienteId = dto.getEffectiveClienteId();
+            if (effectiveClienteId != null) {
+                com.driatelie.model.entity.Cliente cliente = new com.driatelie.model.entity.Cliente();
+                cliente.setId(effectiveClienteId);
+                ordem.setCliente(cliente);
+            }
+            Integer effectiveServicoId = dto.getEffectiveServicoId();
+            if (effectiveServicoId != null) {
+                com.driatelie.model.entity.Servico servico = new com.driatelie.model.entity.Servico();
+                servico.setId_servicos(effectiveServicoId);
+                ordem.setServico(servico);
+            } else {
+                return ResponseEntity.badRequest().body("Campo 'servicoId' é obrigatório");
+            }
+            ordem.setData(dto.getData());
+            ordem.setValorTotal(dto.getValorTotal());
+            ordem.setSinal(dto.getSinal());
+            ordem.setTipoPagamento(dto.getTipoPagamento());
+            ordem.setObservacoes(dto.getObservacoes());
+
+            Ordem_servico novaOrdem_servico = ordem_servicoService.saveOrdem_servico(ordem);
+            OrdemServicoDTO result = toDto(novaOrdem_servico);
+            return ResponseEntity.status(201).body(result);
         } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(ex.getMessage());
         } catch (Exception ex) {
-            return ResponseEntity.status(500).build();
+            ex.printStackTrace();
+            return ResponseEntity.status(500).body("Erro interno: " + ex.getMessage());
         }
     }
 
@@ -84,11 +107,12 @@ public class Ordem_servicoController {
             ordem_servicoAtualizado.setId(id);
             try {
                 Ordem_servico atualizado = ordem_servicoService.saveOrdem_servico(ordem_servicoAtualizado);
-                return ResponseEntity.ok(atualizado);
+                return ResponseEntity.ok(toDto(atualizado));
             } catch (IllegalArgumentException ex) {
                 return ResponseEntity.badRequest().body(ex.getMessage());
             } catch (Exception ex) {
-                return ResponseEntity.status(500).build();
+                ex.printStackTrace();
+                return ResponseEntity.status(500).body("Erro interno: " + ex.getMessage());
             }
         } else {
             return ResponseEntity.status(404).body("Ordem de serviço não encontrada");
@@ -106,28 +130,34 @@ public class Ordem_servicoController {
         }
     }   
 
-    // map entity to safe DTO for JSON serialization
     private OrdemServicoDTO toDto(Ordem_servico o) {
         Integer clienteId = null;
         String clienteNome = null;
+        Integer servicoId = null;
+        String servicoNome = null;
         try {
             if (o.getCliente() != null) {
                 clienteId = o.getCliente().getId();
                 clienteNome = o.getCliente().getNome();
             }
+            if (o.getServico() != null) {
+                servicoId = o.getServico().getId_servicos();
+            }
         } catch (Exception ex) {
             // in case proxy/LAZY causes issues, fall back to nulls
         }
 
-        return new OrdemServicoDTO(
-            o.getId(),
-            clienteId,
-            clienteNome,
-            o.getData(),
-            o.getValorTotal(),
-            o.getSinal(),
-            o.getTipoPagamento(),
-            o.getObservacoes()
-        );
+        OrdemServicoDTO dto = new OrdemServicoDTO();
+        dto.setId(o.getId());
+        dto.setClienteId(clienteId);
+        dto.setClienteNome(clienteNome);
+        dto.setData(o.getData());
+        dto.setValorTotal(o.getValorTotal());
+        dto.setSinal(o.getSinal());
+        dto.setTipoPagamento(o.getTipoPagamento());
+        dto.setObservacoes(o.getObservacoes());
+        dto.setServicoId(servicoId);
+        dto.setServicoNome(servicoNome);
+        return dto;
     }
 }

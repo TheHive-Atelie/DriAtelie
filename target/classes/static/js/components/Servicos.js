@@ -14,6 +14,9 @@ export const Servicos = {
       services: []
     }
   },
+  mounted() {
+    this.fetchServices()
+  },
   computed: {
     filteredServices() {
       if (!this.searchQuery) {
@@ -27,6 +30,23 @@ export const Servicos = {
     }
   },
   methods: {
+    async fetchServices() {
+      try {
+        const res = await fetch('/servicos')
+        if (!res.ok) throw new Error('Erro ao carregar serviços')
+        const list = await res.json()
+        this.services = list.map(s => ({
+          id: s.id_servicos || s.id || s.idServicos,
+          name: s.nomeTipoServico || s.name,
+          price: s.preco || s.price,
+          deadline: s.tempoEstimado || s.deadline,
+          selected: false
+        }))
+      } catch (err) {
+        console.error(err)
+        this.services = []
+      }
+    },
     openAddModal() {
       this.editingService = null
       this.formData = {
@@ -57,36 +77,47 @@ export const Servicos = {
       }
     },
 
-    saveService() {
-      if (this.editingService) {
-        // Atualizar serviço existente
-        const index = this.services.findIndex(s => s.id === this.editingService.id)
-        if (index !== -1) {
-          this.services[index] = {
-            ...this.services[index],
-            name: this.formData.name,
-            price: this.formData.price,
-            deadline: parseInt(this.formData.deadline)
-          }
-        }
-      } else {
-        // Adicionar novo serviço
-        const newId = Math.max(...this.services.map(s => s.id), 0) + 1
-        this.services.push({
-          id: newId,
-          name: this.formData.name,
-          price: this.formData.price,
-          deadline: parseInt(this.formData.deadline),
-          selected: false
-        })
+    async saveService() {
+      const payload = {
+        nomeTipoServico: this.formData.name,
+        preco: Number(this.formData.price),
+        tempoEstimado: Number(this.formData.deadline)
       }
 
-      this.closeModal()
+      try {
+        if (this.editingService && this.editingService.id) {
+          const res = await fetch(`/servicos/${this.editingService.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          })
+          if (!res.ok) throw new Error('Erro ao atualizar serviço')
+        } else {
+          const res = await fetch('/servicos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          })
+          if (!res.ok) throw new Error('Erro ao criar serviço')
+        }
+
+        await this.fetchServices()
+        this.closeModal()
+      } catch (err) {
+        console.error(err)
+        alert('Erro ao salvar serviço: ' + err.message)
+      }
     },
 
-    deleteService(id) {
-      if (confirm('Tem certeza que deseja deletar este serviço?')) {
+    async deleteService(id) {
+      if (!confirm('Tem certeza que deseja deletar este serviço?')) return
+      try {
+        const res = await fetch(`/servicos/${id}`, { method: 'DELETE' })
+        if (!res.ok) throw new Error('Erro ao deletar serviço')
         this.services = this.services.filter(service => service.id !== id)
+      } catch (err) {
+        console.error(err)
+        alert('Erro ao deletar serviço: ' + err.message)
       }
     }
   },

@@ -404,16 +404,14 @@ export const Clientes = {
         <div class="modal os-detail-modal">
           <h2 class="modal-title">Detalhes da Ordem de Serviço</h2>
           <div v-if="selectedOS" class="os-detail-content">
-            <div class="detail-row"><strong>Ordem de Serviço(Id):</strong> <span class="detail-row-value">{{ selectedOS.id }}</span></div>
-            <div class="detail-row" v-if="selectedOS.servico && selectedOS.servico.nomeTipoServico"><strong>Serviço:</strong> <span class="detail-row-value">{{ selectedOS.servico.nomeTipoServico }}</span></div>
-            <div class="detail-row" v-else-if="selectedOS.nomeTipoServico"><strong>Serviço:</strong> <span class="detail-row-value">{{ selectedOS.nomeTipoServico }}</span></div>
-            <div class="detail-row" v-if="selectedOS.servico?.id_servicos != null"><strong>Serviço(id):</strong> <span class="detail-row-value">{{ selectedOS.servico.id_servicos }}</span></div>
+            <div class="detail-row"><strong>ID Ordem:</strong> <span class="detail-row-value">#{{ selectedOS.id }}</span></div>
+            <div class="detail-row"><strong>Serviço:</strong> <span class="detail-row-value">{{ selectedOS.servicoNome || 'N/A' }}</span></div>
+            <div class="detail-row"><strong>ID Serviço:</strong> <span class="detail-row-value">#{{ selectedOS.servicoId || 'N/A' }}</span></div>
             <div class="detail-row" v-if="selectedOS.data"><strong>Data:</strong> <span class="detail-row-value">{{ formatDate(selectedOS.data) }}</span></div>
-            <div class="detail-row" v-if="selectedOS.servico && selectedOS.servico.tempo_estimado != null"><strong>Tempo estimado (em dias):</strong> <span class="detail-row-value">{{ selectedOS.servico.tempo_estimado }}</span></div>
-            <div class="detail-row" v-else-if="selectedOS.tempoEstimadoDias != null"><strong>Tempo estimado (em dias):</strong> <span class="detail-row-value">{{ selectedOS.tempoEstimadoDias }}</span></div>
-            <div class="detail-row" v-if="selectedOS.valorTotal != null"><strong>Valor total:</strong> <span class="detail-row-value">R$ {{ (selectedOS.valorTotal || 0).toFixed(2).replace('.', ',') }}</span></div>
+            <div class="detail-row" v-if="selectedOS.tempoEstimadoDias != null"><strong>Tempo Estimado:</strong> <span class="detail-row-value">{{ selectedOS.tempoEstimadoDias }} dias</span></div>
+            <div class="detail-row" v-if="selectedOS.valorTotal != null"><strong>Valor Total:</strong> <span class="detail-row-value">R$ {{ (selectedOS.valorTotal || 0).toFixed(2).replace('.', ',') }}</span></div>
             <div class="detail-row" v-if="selectedOS.sinal != null"><strong>Sinal:</strong> <span class="detail-row-value">R$ {{ (selectedOS.sinal || 0).toFixed(2).replace('.', ',') }}</span></div>
-            <div class="detail-row" v-if="selectedOS.tipoPagamento"><strong>Tipo pagamento:</strong> <span class="detail-row-value">{{ selectedOS.tipoPagamento }}</span></div>
+            <div class="detail-row" v-if="selectedOS.tipoPagamento"><strong>Tipo Pagamento:</strong> <span class="detail-row-value">{{ selectedOS.tipoPagamento }}</span></div>
             <div class="detail-row" v-if="selectedOS.observacoes"><strong>Observações:</strong> <span class="detail-row-value">{{ selectedOS.observacoes }}</span></div>
           </div>
           <div class="modal-actions">

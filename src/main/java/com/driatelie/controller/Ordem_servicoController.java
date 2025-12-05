@@ -146,6 +146,7 @@ public class Ordem_servicoController {
         String clienteNome = null;
         Integer servicoId = null;
         String servicoNome = null;
+        Integer tempoEstimadoDias = null;
         try {
             if (o.getCliente() != null) {
                 clienteId = o.getCliente().getId();
@@ -154,6 +155,7 @@ public class Ordem_servicoController {
             if (o.getServico() != null) {
                 servicoId = o.getServico().getId_servicos();
                 servicoNome = o.getServico().getNomeTipoServico();
+                tempoEstimadoDias = o.getServico().getTempoEstimado();
             }
         } catch (Exception ex) {
             // in case proxy/LAZY causes issues, fall back to nulls
@@ -164,6 +166,7 @@ public class Ordem_servicoController {
         dto.setClienteId(clienteId);
         dto.setClienteNome(clienteNome);
         dto.setData(o.getData());
+        dto.setTempoEstimadoDias(tempoEstimadoDias);
         dto.setValorTotal(o.getValorTotal());
         dto.setSinal(o.getSinal());
         dto.setTipoPagamento(o.getTipoPagamento());

@@ -24,6 +24,7 @@ public class OrdemServicoDTO {
     private String servicoNome;
     private ServicoRef servico;
     private LocalDate data;
+    private Integer tempoEstimadoDias;
     private Double valorTotal;
     private Double sinal;
     private String tipoPagamento;

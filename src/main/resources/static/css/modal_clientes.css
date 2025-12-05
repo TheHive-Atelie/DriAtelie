@@ -17,6 +17,10 @@
   text-align: left;
 }
 
+.services-modal {
+  padding: 22px 28px;
+}
+
 .modal-title {
   margin: 0 0 16px 0;
   font-size: 20px;
@@ -47,16 +51,17 @@
   display: flex;
   justify-content: center;
   gap: 16px;
-  margin-top: 14px;
+  margin-top: 24px;
 }
 
 .cancel-btn {
-  background: #ff3b30;
+  background: var(--red-color);
   color: #fff;
   border: none;
   padding: 9px 16px;
   border-radius: 20px;
   cursor: pointer;
+  font-weight: 600;
 }
 
 .add-btn {
@@ -66,6 +71,7 @@
   padding: 9px 16px;
   border-radius: 20px;
   cursor: pointer;
+  font-weight: 600;
 }
 
 /* Delete Confirmation Modal */
@@ -89,7 +95,7 @@
 }
 
 .delete-confirm-btn {
-  background: #c62828;
+  background: var(--red-color);
   color: #fff;
   border: none;
   padding: 9px 16px;
@@ -99,7 +105,7 @@
 }
 
 .delete-confirm-btn:hover {
-  background: #a01f1f;
+  background: #9a2f2f;
   transition: background .2s ease;
 }
 

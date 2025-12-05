@@ -109,6 +109,26 @@ export const Clientes = {
       if (v.length <= 7) return `${v.slice(0, 2)} ${v.slice(2)}`;
       return `${v.slice(0, 2)} ${v.slice(2, 7)}-${v.slice(7, 11)}`;
     },
+    formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString + 'T00:00:00');
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    },
+    async getServiceName(idServicos) {
+      try {
+        const response = await fetch(`/servicos/${idServicos}`);
+        if (response.ok) {
+          const data = await response.json();
+          return data.nomeTipoServico || `Serviço #${idServicos}`;
+        }
+        return `Serviço #${idServicos}`;
+      } catch (e) {
+        return `Serviço #${idServicos}`;
+      }
+    },
     async saveClient() {
       this.error = null;
       try {
@@ -191,6 +211,15 @@ export const Clientes = {
         if (!resp.ok) throw new Error(`Erro ao carregar ordens de serviço: ${resp.status}`);
         const data = await resp.json();
         this.ordens = Array.isArray(data) ? data : [];
+        
+        // Buscar nome do serviço para cada ordem se não vier no relacionamento
+        for (let os of this.ordens) {
+          if (!os.servico && os.servico?.id_servicos) {
+            os.nomeTipoServico = await this.getServiceName(os.servico.id_servicos);
+          } else if (os.servico) {
+            os.nomeTipoServico = os.servico.nomeTipoServico;
+          }
+        }
       } catch (e) {
         this.servicesError = e.message;
       } finally {
@@ -203,8 +232,16 @@ export const Clientes = {
       this.ordens = [];
       this.servicesError = null;
     },
-    openOSDetail(os) {
+    async openOSDetail(os) {
       this.selectedOS = os;
+      // Buscar nome do serviço se não tiver no relacionamento
+      if (!os.servico || !os.servico.nomeTipoServico) {
+        if (os.servico?.id_servicos) {
+          os.nomeTipoServico = await this.getServiceName(os.servico.id_servicos);
+        }
+      } else {
+        os.nomeTipoServico = os.servico.nomeTipoServico;
+      }
       this.osDetailModalOpen = true;
     },
     closeOSDetail() {
@@ -218,9 +255,6 @@ export const Clientes = {
       <header class="page-header">
         <div class="header-left">
           <h1 class="header-title">Listagem de clientes</h1>
-          <nav class="header-tabs">
-            <button class="tab active">Listagem de clientes</button>
-          </nav>
         </div>
         <div class="header-right">
           <div class="brand">DRI'AH</div>
@@ -321,24 +355,26 @@ export const Clientes = {
       <!-- Filters modal -->
       <div v-if="filtersOpen" class="modal-backdrop" @click.self="closeFilters">
         <div class="modal filters-modal">
+          <button class="modal-close-btn" @click="closeFilters" aria-label="Fechar">
+            <i class="fa fa-times"></i>
+          </button>
           <h2 class="modal-title">Filtros de pesquisa</h2>
           <div class="filters-grid">
-            <div class="filters-col">
-              <h3 class="filters-subtitle">CLIENTE</h3>
+            <div class="filter-field">
               <label>Id</label>
-              <input class="modal-input" v-model="filters.id" type="text" placeholder="Id">
+              <input class="modal-input" v-model="filters.id" type="text" placeholder="Ex: 1">
+            </div>
+            <div class="filter-field">
               <label>Nome</label>
               <input class="modal-input" v-model="filters.nome" type="text" placeholder="Nome">
             </div>
-            <div class="filters-col">
-              <h3 class="filters-subtitle">EMAIL</h3>
+            <div class="filter-field">
               <label>Email</label>
               <input class="modal-input" v-model="filters.email" type="text" placeholder="email@...">
             </div>
-            <div class="filters-col">
-              <h3 class="filters-subtitle">TELEFONE</h3>
+            <div class="filter-field">
               <label>Telefone</label>
-              <input class="modal-input" v-model="filters.telefone" type="text" placeholder="99 99999-9999">
+              <input class="modal-input" v-model="filters.telefone" @input="filters.telefone = formatPhone(filters.telefone)" type="text" placeholder="99 99999-9999">
             </div>
           </div>
           <div class="modal-actions">
@@ -361,8 +397,8 @@ export const Clientes = {
             <ul class="os-list">
               <li v-for="os in ordens" :key="os.id" class="os-item">
                 <div class="os-info">
-                  <span class="os-title">OS #{{ os.id }}</span>
-                  <span class="os-date" v-if="os.data"> - {{ os.data }}</span>
+                  <span class="os-service-name">{{ os.servico?.nomeTipoServico || os.nomeTipoServico || 'Carregando...' }}</span>
+                  <span class="os-date" v-if="os.data">{{ formatDate(os.data) }}</span>
                 </div>
                 <button class="btn view-btn" @click="openOSDetail(os)">Ver</button>
               </li>
@@ -380,13 +416,17 @@ export const Clientes = {
         <div class="modal os-detail-modal">
           <h2 class="modal-title">Detalhes da Ordem de Serviço</h2>
           <div v-if="selectedOS" class="os-detail-content">
-            <div class="detail-row"><strong>Id:</strong> {{ selectedOS.id }}</div>
-            <div class="detail-row" v-if="selectedOS.data"><strong>Data:</strong> {{ selectedOS.data }}</div>
-            <div class="detail-row" v-if="selectedOS.valorTotal != null"><strong>Valor total:</strong> {{ selectedOS.valorTotal }}</div>
-            <div class="detail-row" v-if="selectedOS.sinal != null"><strong>Sinal:</strong> {{ selectedOS.sinal }}</div>
-            <div class="detail-row" v-if="selectedOS.tipoPagamento"><strong>Tipo pagamento:</strong> {{ selectedOS.tipoPagamento }}</div>
-            <div class="detail-row" v-if="selectedOS.observacoes"><strong>Observações:</strong> {{ selectedOS.observacoes }}</div>
-            <div class="detail-row" v-if="selectedOS.idServicos != null"><strong>Serviço (id):</strong> {{ selectedOS.idServicos }}</div>
+            <div class="detail-row"><strong>Ordem de Serviço(Id):</strong> <span class="detail-row-value">{{ selectedOS.id }}</span></div>
+            <div class="detail-row" v-if="selectedOS.servico && selectedOS.servico.nomeTipoServico"><strong>Serviço:</strong> <span class="detail-row-value">{{ selectedOS.servico.nomeTipoServico }}</span></div>
+            <div class="detail-row" v-else-if="selectedOS.nomeTipoServico"><strong>Serviço:</strong> <span class="detail-row-value">{{ selectedOS.nomeTipoServico }}</span></div>
+            <div class="detail-row" v-if="selectedOS.servico?.id_servicos != null"><strong>Serviço(id):</strong> <span class="detail-row-value">{{ selectedOS.servico.id_servicos }}</span></div>
+            <div class="detail-row" v-if="selectedOS.data"><strong>Data:</strong> <span class="detail-row-value">{{ formatDate(selectedOS.data) }}</span></div>
+            <div class="detail-row" v-if="selectedOS.servico && selectedOS.servico.tempo_estimado != null"><strong>Tempo estimado (em dias):</strong> <span class="detail-row-value">{{ selectedOS.servico.tempo_estimado }}</span></div>
+            <div class="detail-row" v-else-if="selectedOS.tempoEstimadoDias != null"><strong>Tempo estimado (em dias):</strong> <span class="detail-row-value">{{ selectedOS.tempoEstimadoDias }}</span></div>
+            <div class="detail-row" v-if="selectedOS.valorTotal != null"><strong>Valor total:</strong> <span class="detail-row-value">R$ {{ (selectedOS.valorTotal || 0).toFixed(2).replace('.', ',') }}</span></div>
+            <div class="detail-row" v-if="selectedOS.sinal != null"><strong>Sinal:</strong> <span class="detail-row-value">R$ {{ (selectedOS.sinal || 0).toFixed(2).replace('.', ',') }}</span></div>
+            <div class="detail-row" v-if="selectedOS.tipoPagamento"><strong>Tipo pagamento:</strong> <span class="detail-row-value">{{ selectedOS.tipoPagamento }}</span></div>
+            <div class="detail-row" v-if="selectedOS.observacoes"><strong>Observações:</strong> <span class="detail-row-value">{{ selectedOS.observacoes }}</span></div>
           </div>
           <div class="modal-actions">
             <button class="btn cancel-btn" @click="closeOSDetail">Fechar</button>

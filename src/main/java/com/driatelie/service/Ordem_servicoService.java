@@ -35,6 +35,13 @@ public class Ordem_servicoService {
         return ordem_servicoRepository.findByData(data);
     }
 
+    public List<Ordem_servico> getOrdem_servicosByClienteId(Integer clienteId) {
+        List<Ordem_servico> all = ordem_servicoRepository.findAll();
+        return all.stream()
+            .filter(os -> os.getCliente() != null && clienteId.equals(os.getCliente().getId()))
+            .toList();
+    }
+
     public Ordem_servico saveOrdem_servico(Ordem_servico ordem_servico) {
         if (ordem_servico == null) {
             throw new IllegalArgumentException("Ordem_servico não pode ser nula");

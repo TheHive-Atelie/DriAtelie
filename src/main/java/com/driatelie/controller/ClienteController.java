@@ -1,7 +1,6 @@
 package com.driatelie.controller;
 
 import com.driatelie.model.entity.Cliente;
-import com.driatelie.model.entity.Ordem_servico;
 import com.driatelie.service.ClienteService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,11 +66,5 @@ public class ClienteController {
         } else {
             return ResponseEntity.status(404).body("Cliente não encontrado");
         }
-    }
-
-    @GetMapping("/{id}/servicos")
-    public ResponseEntity<List<Ordem_servico>> getOrdensDeServico(@PathVariable Integer id) {
-        List<Ordem_servico> ordens = clienteService.getOrdensServicoByClienteId(id);
-        return ResponseEntity.ok(ordens);
     }
 }

@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,9 +39,11 @@ public class Ordem_servico {
     @JsonBackReference
     private Cliente cliente;
 
-    // New: link to servicos table by id
-    @Column(name = "id_servicos", nullable = false)
-    private Integer idServicos;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_servicos", nullable = false,
+                foreignKey = @ForeignKey(name = "fk_ordem_servico_servico"))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Servico servico;
     
     @Column(name = "data")
     private LocalDate data;
@@ -56,15 +59,8 @@ public class Ordem_servico {
     
     @Column(name = "obs", length = 350)
     private String observacoes;
-    
-    // // Método conveniente para obter o telefone do cliente
-    // public String getTelefoneCliente() {
-    //     return cliente != null ? cliente.getTelefone() : null;
-    // }
 
-}
-
-/*
+}/*
 CREATE TABLE `driah`.`ordens_de_servico` (
   `idordens_de_servico` INT NOT NULL AUTO_INCREMENT,
   `id_cliente` INT NOT NULL,

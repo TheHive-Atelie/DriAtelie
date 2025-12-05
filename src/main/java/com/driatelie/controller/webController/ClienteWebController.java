@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.driatelie.model.entity.Cliente;
-import com.driatelie.model.entity.Ordem_servico;
 import com.driatelie.service.ClienteService;
 
 @Controller
@@ -85,30 +84,6 @@ public class ClienteWebController {
         }
 
         return "redirect:/web/clientes";
-    }
-
-    // lógica para ver a lista de ordens de serviço associadas a um cliente
-    @GetMapping("/{id}/servicos")
-    public String listarServicosPorCliente(@PathVariable("id") Integer id, Model model,
-            RedirectAttributes redirectAttributes) {
-        try {
-            Cliente cliente = clienteService.getClienteById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("Cliente não encontrado"));
-
-            List<Ordem_servico> ordens = clienteService.getOrdensServicoByClienteId(id);
-
-            if (ordens.isEmpty()) {
-                model.addAttribute("mensagemInfo", "Este cliente não possui ordens de serviço.");
-            }
-
-            model.addAttribute("cliente", cliente);
-            model.addAttribute("ordens", ordens);
-            return "clientes/servicos-cliente";
-            
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("mensagemErro", "Erro ao carregar serviços do cliente.");
-            return "redirect:/web/clientes";
-        }
     }
 
 }

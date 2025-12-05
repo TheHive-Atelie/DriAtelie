@@ -63,62 +63,104 @@ export const Comandas = {
   },
 
   template: `
-    <div class="main-area">
-      <header class="page-header">
-        <div class="header-left">
-          <h1 class="header-title">Comandas</h1>
-        </div>
+    <div class="main-area page-content">
+    <div class="comandas-crud">
+      <header class="page-header header">
+
+    <div class="header page-header">
+      <h1>Listagem de serviços</h1>
+      <div class="subtitle">Lista de serviços disponíveis</div>
+    </div>
+
         <div class="header-right">
           <div class="brand">DRI'AH</div>
           <div class="avatar"></div>
         </div>
+
       </header>
 
       <section class="page-content">
-        <div class="comandas-header">
-          <div class="search-area">
-            <input type="text" v-model="searchQuery" placeholder="Código/Cliente/Serviço..." class="search-input"/>
-            <button class="search-btn">🔍</button>
-            <button class="filter-btn">⚙️ Filtros</button>
+        <!-- Barra de pesquisa e ações -->
+    <div class="actions-bar">
+      <div class="search-container">
+        <input 
+          type="text" 
+          v-model="searchQuery"
+          placeholder="Pesquisar serviços..." 
+          class="search-input"
+        />
+        <button class="search-btn">Q</button>
+      </div>
+      <button class="add-btn" @click="openAddModal">
+        Adicionar comanda
+      </button>
+    </div>
+
+        <div class="comandas-table">
+          <div v-if="loading">Carregando ordens de serviço...</div>
+        <div v-if="error" class="error">Erro: {{ error }}</div><div class="servicos-table">
+
+              <!-- theader -->
+         <div class="services-table">
+            <div class="list-header">
+              <div class="deadline-column header-cell">Id da O.S.</div>
+              <div class="deadline-column header-cell">Id do Cliente</div>
+              <div class="deadline-column header-cell">Id do Serviço Executado</div>
+              <div class="deadline-column header-cell">Data da criação</div>
+              <div class="deadline-column header-cell">Data da criação</div>
+              <div class="deadline-column header-cell">Telefone do Cliente</div>
+              <div class="deadline-column header-cell">Valor final da OS</div>
+              <div class="deadline-column header-cell">Sinal</div>
+              <div class="deadline-column header-cell">Tipo Pagamento</div>
+              <div class="deadline-column header-cell">Detalhes</div>
+
+              <div class="actions-column header-cell">Ações</div>
+            </div>
           </div>
-          <div class="actions">
-            <button class="create-btn" @click.prevent="onCreate">+ Criar nova comanda</button>
-          </div>
+
+        <div 
+        v-for="order in filteredorders" 
+        :key="order.id" 
+        class="order-item table-row">
+
+          <div>#{{ String(order.id).padStart(3, '0') }}</div>
+          <div class="name-column cell comandas-cliente">#{{ order.clienteId ? String(order.clienteId).padStart(3, '0') : '-' }}</div>
+
+          <div class="price-column cell">R$ {{ order.price }}</div>
+          <div class="deadline-column cell">{{ order.deadline }} dias</div>
+          <div class="actions-column actions cell">
+            <button class="edit-btn action-btn" @click="openEditModal(order)">
+             Editar
+            </button>
+            <button class="delete-btn action-btn" @click="deleteorder(order.id)">
+              Deletar
+           </button>
+         </div>
+
         </div>
 
-        <div class="table-container">
-          <div v-if="loading">Carregando ordens de serviço...</div>
-          <div v-if="error" class="error">Erro: {{ error }}</div>
+             <tbody>
+               <tr v-for="order in orders" :key="order.id">
+                  <td></td>
+                  <td></td>
+                 <td>{{ formatDate(order.data) }}</td>
+                 <td>{{ formatCurrency(order.valorTotal) }}</td>
+                 <td>
+                   <button class="view-btn" @click.prevent="onView(order)">Ver</button>
+                    <button class="remove-btn" @click.prevent="onDelete(order)">Remover</button>
+                  </td>
+                </tr>
+                <tr v-if="orders.length === 0">
+                  <td colspan="5" class="empty">Nenhuma ordem de serviço encontrada.</td>
+               </tr>
+             </tbody>
 
-          <table v-if="!loading && !error" class="comandas-table">
-            <thead>
-              <tr>
-                <th>Id Comanda</th>
-                <th>Id Cliente</th>
-                <th>Data</th>
-                <th>Valor Total</th>
-                <th>Operações</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="order in orders" :key="order.id">
-                <td>#{{ String(order.id).padStart(3, '0') }}</td>
-                <td>#{{ order.clienteId ? String(order.clienteId).padStart(3, '0') : '-' }}</td>
-                <td>{{ formatDate(order.data) }}</td>
-                <td>{{ formatCurrency(order.valorTotal) }}</td>
-                <td>
-                  <button class="view-btn" @click.prevent="onView(order)">Ver</button>
-                  <button class="remove-btn" @click.prevent="onDelete(order)">Remover</button>
-                </td>
-              </tr>
-              <tr v-if="orders.length === 0">
-                <td colspan="5" class="empty">Nenhuma ordem de serviço encontrada.</td>
-              </tr>
-            </tbody>
-          </table>
+            </table>
+          </div>
         </div>
 
       </section>
+      </div>
     </div>
   `
 };

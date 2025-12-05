@@ -63,6 +63,17 @@ public class Ordem_servicoController {
             return ResponseEntity.badRequest().body("Formato de data inválido. Use yyyy-MM-dd");
         }
     }
+
+    @GetMapping("/cliente/{clienteId}")
+    public ResponseEntity<?> findByClienteId(@PathVariable Integer clienteId) {
+        List<Ordem_servico> ordem_servicos = ordem_servicoService.getOrdem_servicosByClienteId(clienteId);
+        if (!ordem_servicos.isEmpty()) {
+            List<OrdemServicoDTO> dto = ordem_servicos.stream().map(this::toDto).collect(Collectors.toList());
+            return ResponseEntity.ok(dto);
+        } else {
+            return ResponseEntity.status(404).body("Nenhuma ordem de serviço encontrada para este cliente");
+        }
+    }
     
     
     @PostMapping

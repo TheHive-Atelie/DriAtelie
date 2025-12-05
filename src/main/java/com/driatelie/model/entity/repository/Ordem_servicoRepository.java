@@ -12,5 +12,7 @@ import com.driatelie.model.entity.Ordem_servico;
 public interface Ordem_servicoRepository extends JpaRepository<Ordem_servico, Integer> {
 
     List<Ordem_servico> findByData(LocalDate data);
+    
+    List<Ordem_servico> findByClienteId(Integer clienteId);
 
 }

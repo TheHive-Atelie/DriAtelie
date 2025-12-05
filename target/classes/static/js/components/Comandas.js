@@ -8,6 +8,18 @@ export const Comandas = {
       error: null
     }
   },
+  computed: {
+    filteredOrders() {
+      if (!this.searchQuery) return this.orders;
+      const query = this.searchQuery.toLowerCase();
+      return this.orders.filter(order => 
+        String(order.id).includes(query) ||
+        String(order.clienteId).includes(query) ||
+        String(order.servicoId).includes(query) ||
+        (order.clienteNome && order.clienteNome.toLowerCase().includes(query))
+      );
+    }
+  },
   methods: {
     async fetchOrders() {
       this.loading = true
@@ -28,9 +40,15 @@ export const Comandas = {
     formatDate(isoDateStr) {
       if (!isoDateStr) return ''
       try {
-        const d = new Date(isoDateStr)
-        if (isNaN(d)) return isoDateStr
-        return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' })
+        // Parse YYYY-MM-DD directly to avoid timezone issues
+        const parts = String(isoDateStr).split('-')
+        if (parts.length === 3) {
+          const year = parseInt(parts[0])
+          const month = parseInt(parts[1])
+          const day = parseInt(parts[2])
+          return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`
+        }
+        return isoDateStr
       } catch (e) {
         return isoDateStr
       }
@@ -64,102 +82,75 @@ export const Comandas = {
 
   template: `
     <div class="main-area page-content">
-    <div class="comandas-crud">
-      <header class="page-header header">
+      <div class="comandas-crud">
+        <header class="page-header header">
+          <div class="header page-header">
+            <h1>Listagem de Ordens de Serviço</h1>
+            <div class="subtitle">Ordens de serviço cadastradas no sistema</div>
+          </div>
+          <div class="header-right">
+            <div class="brand">DRI'AH</div>
+            <div class="avatar"></div>
+          </div>
+        </header>
 
-    <div class="header page-header">
-      <h1>Listagem de serviços</h1>
-      <div class="subtitle">Lista de serviços disponíveis</div>
-    </div>
+        <section class="page-content">
+          <div class="actions-bar">
+            <div class="search-container">
+              <input 
+                type="text" 
+                v-model="searchQuery"
+                placeholder="Pesquisar por ID, cliente ou serviço..." 
+                class="search-input"
+              />
+              <button class="search-btn">Q</button>
+            </div>
+            <button class="add-btn" @click="onCreate">
+              Adicionar Comanda
+            </button>
+          </div>
 
-        <div class="header-right">
-          <div class="brand">DRI'AH</div>
-          <div class="avatar"></div>
-        </div>
+          <div class="comandas-table">
+            <div v-if="loading" class="loading-message">Carregando ordens de serviço...</div>
+            <div v-else-if="error" class="error-message">Erro: {{ error }}</div>
+            <div v-else-if="orders.length === 0" class="empty-message">Nenhuma ordem de serviço encontrada.</div>
+            <div v-else class="services-table">
+              <div class="list-header">
+                <div class="id-column header-cell">ID O.S.</div>
+                <div class="id-column header-cell">ID Cliente</div>
+                <div class="name-column header-cell">Cliente</div>
+                <div class="id-column header-cell">ID Serviço</div>
+                <div class="name-column header-cell">Serviço</div>
+                <div class="date-column header-cell">Data</div>
+                <div class="time-column header-cell">Tempo Est.</div>
+                <div class="value-column header-cell">Valor Total</div>
+                <div class="value-column header-cell">Sinal</div>
+                <div class="status-column header-cell">Pagamento</div>
+                <div class="actions-column header-cell">Ações</div>
+              </div>
 
-      </header>
-
-      <section class="page-content">
-        <!-- Barra de pesquisa e ações -->
-    <div class="actions-bar">
-      <div class="search-container">
-        <input 
-          type="text" 
-          v-model="searchQuery"
-          placeholder="Pesquisar serviços..." 
-          class="search-input"
-        />
-        <button class="search-btn">Q</button>
-      </div>
-      <button class="add-btn" @click="openAddModal">
-        Adicionar comanda
-      </button>
-    </div>
-
-        <div class="comandas-table">
-          <div v-if="loading">Carregando ordens de serviço...</div>
-        <div v-if="error" class="error">Erro: {{ error }}</div><div class="servicos-table">
-
-              <!-- theader -->
-         <div class="services-table">
-            <div class="list-header">
-              <div class="deadline-column header-cell">Id da O.S.</div>
-              <div class="deadline-column header-cell">Id do Cliente</div>
-              <div class="deadline-column header-cell">Id do Serviço Executado</div>
-              <div class="deadline-column header-cell">Data da criação</div>
-              <div class="deadline-column header-cell">Data da criação</div>
-              <div class="deadline-column header-cell">Telefone do Cliente</div>
-              <div class="deadline-column header-cell">Valor final da OS</div>
-              <div class="deadline-column header-cell">Sinal</div>
-              <div class="deadline-column header-cell">Tipo Pagamento</div>
-              <div class="deadline-column header-cell">Detalhes</div>
-
-              <div class="actions-column header-cell">Ações</div>
+              <div 
+                v-for="order in filteredOrders" 
+                :key="order.id" 
+                class="order-item table-row">
+                <div class="id-column cell">#{{ String(order.id).padStart(3, '0') }}</div>
+                <div class="id-column cell">#{{ order.clienteId ? String(order.clienteId).padStart(3, '0') : '-' }}</div>
+                <div class="name-column cell">{{ order.clienteNome || '-' }}</div>
+                <div class="id-column cell">#{{ order.servicoId ? String(order.servicoId).padStart(3, '0') : '-' }}</div>
+                <div class="name-column cell">{{ order.servicoNome || '-' }}</div>
+                <div class="date-column cell">{{ formatDate(order.data) }}</div>
+                <div class="time-column cell">{{ order.tempoEstimadoDias ? order.tempoEstimadoDias + ' d' : '-' }}</div>
+                <div class="value-column cell">{{ formatCurrency(order.valorTotal) }}</div>
+                <div class="value-column cell">{{ formatCurrency(order.sinal) }}</div>
+                <div class="status-column cell">{{ order.tipoPagamento || '-' }}</div>
+                <div class="actions-column actions cell">
+                  <button class="view-btn action-btn" @click="onView(order)">Ver</button>
+                  <button class="delete-btn action-btn" @click="onDelete(order)">Remover</button>
+                </div>
+              </div>
             </div>
           </div>
-
-        <div 
-        v-for="order in filteredorders" 
-        :key="order.id" 
-        class="order-item table-row">
-
-          <div>#{{ String(order.id).padStart(3, '0') }}</div>
-          <div class="name-column cell comandas-cliente">#{{ order.clienteId ? String(order.clienteId).padStart(3, '0') : '-' }}</div>
-
-          <div class="price-column cell">R$ {{ order.price }}</div>
-          <div class="deadline-column cell">{{ order.deadline }} dias</div>
-          <div class="actions-column actions cell">
-            <button class="edit-btn action-btn" @click="openEditModal(order)">
-             Editar
-            </button>
-            <button class="delete-btn action-btn" @click="deleteorder(order.id)">
-              Deletar
-           </button>
-         </div>
-
-        </div>
-
-             <tbody>
-               <tr v-for="order in orders" :key="order.id">
-                  <td></td>
-                  <td></td>
-                 <td>{{ formatDate(order.data) }}</td>
-                 <td>{{ formatCurrency(order.valorTotal) }}</td>
-                 <td>
-                   <button class="view-btn" @click.prevent="onView(order)">Ver</button>
-                    <button class="remove-btn" @click.prevent="onDelete(order)">Remover</button>
-                  </td>
-                </tr>
-                <tr v-if="orders.length === 0">
-                  <td colspan="5" class="empty">Nenhuma ordem de serviço encontrada.</td>
-               </tr>
-             </tbody>
-
-            </table>
-          </div>
-        </div>
-
-      </section>
+        </section>
       </div>
     </div>
   `

@@ -111,11 +111,19 @@ export const Clientes = {
     },
     formatDate(dateString) {
       if (!dateString) return '';
-      const date = new Date(dateString + 'T00:00:00');
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const year = date.getFullYear();
-      return `${day}/${month}/${year}`;
+      try {
+        // Parse YYYY-MM-DD directly to avoid timezone issues
+        const parts = String(dateString).split('-')
+        if (parts.length === 3) {
+          const year = parseInt(parts[0])
+          const month = parseInt(parts[1])
+          const day = parseInt(parts[2])
+          return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`
+        }
+        return dateString
+      } catch (e) {
+        return dateString
+      }
     },
     async getServiceName(idServicos) {
       try {

@@ -1,34 +1,25 @@
 com\driatelie\service\Ordem_servicoService.class
-com\driatelie\controller\ServicoController.class
 com\driatelie\model\entity\Ordem_servico.class
-<<<<<<< HEAD
 com\driatelie\dto\OrdemServicoDTO.class
-=======
->>>>>>> 478926bfe3004dc1ad9947d3500f2221f4485961
 com\driatelie\DriahApplication.class
-com\driatelie\model\entity\repository\ClienteRepository.class
-com\driatelie\service\ClienteService.class
 com\driatelie\controller\Ordem_servicoController.class
 com\driatelie\model\entity\Servico.class
-com\driatelie\controller\webController\ClienteWebController.class
-com\driatelie\controller\webController\helloworldController.class
 com\driatelie\model\entity\Saida.class
 com\driatelie\controller\SaidaController.class
 com\driatelie\model\entity\Cliente.class
 com\driatelie\model\entity\repository\SaidaRepository.class
 com\driatelie\service\ServicoService.class
-com\driatelie\controller\ClienteController.class
-<<<<<<< HEAD
-com\driatelie\dto\OrdemServicoDTO$ClienteRef.class
-com\driatelie\controller\webController\ServicoWebController.class
-com\driatelie\model\entity\repository\ServicoRepository.class
-com\driatelie\dto\ClienteDTO.class
-com\driatelie\controller\webController\AppWebController.class
-com\driatelie\dto\OrdemServicoDTO$ServicoRef.class
-=======
 com\driatelie\controller\webController\ServicoWebController.class
 com\driatelie\model\entity\repository\ServicoRepository.class
 com\driatelie\controller\webController\AppWebController.class
->>>>>>> 478926bfe3004dc1ad9947d3500f2221f4485961
 com\driatelie\config\WebConfig.class
 com\driatelie\model\entity\repository\Ordem_servicoRepository.class
+com\driatelie\controller\ServicoController.class
+com\driatelie\model\entity\repository\ClienteRepository.class
+com\driatelie\service\ClienteService.class
+com\driatelie\controller\webController\ClienteWebController.class
+com\driatelie\controller\webController\helloworldController.class
+com\driatelie\controller\ClienteController.class
+com\driatelie\dto\OrdemServicoDTO$ClienteRef.class
+com\driatelie\dto\ClienteDTO.class
+com\driatelie\dto\OrdemServicoDTO$ServicoRef.class

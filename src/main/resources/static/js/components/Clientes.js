@@ -212,12 +212,10 @@ export const Clientes = {
         const data = await resp.json();
         this.ordens = Array.isArray(data) ? data : [];
 
-        // Buscar nome do serviço para cada ordem se não vier no relacionamento
+        // Usar servicoNome do DTO, que já vem preenchido do backend
         for (let os of this.ordens) {
-          if (!os.servico && os.servico?.id_servicos) {
-            os.nomeTipoServico = await this.getServiceName(os.servico.id_servicos);
-          } else if (os.servico) {
-            os.nomeTipoServico = os.servico.nomeTipoServico;
+          if (!os.servicoNome && os.servicoId) {
+            os.servicoNome = await this.getServiceName(os.servicoId);
           }
         }
       } catch (e) {
@@ -234,14 +232,7 @@ export const Clientes = {
     },
     async openOSDetail(os) {
       this.selectedOS = os;
-      // Buscar nome do serviço se não tiver no relacionamento
-      if (!os.servico || !os.servico.nomeTipoServico) {
-        if (os.servico?.id_servicos) {
-          os.nomeTipoServico = await this.getServiceName(os.servico.id_servicos);
-        }
-      } else {
-        os.nomeTipoServico = os.servico.nomeTipoServico;
-      }
+      // Já temos servicoNome do backend, não precisa buscar novamente
       this.osDetailModalOpen = true;
     },
     closeOSDetail() {
@@ -394,7 +385,7 @@ export const Clientes = {
             <ul class="os-list" v-else>
               <li v-for="os in ordens" :key="os.id" class="os-item">
                 <div class="os-info">
-                  <span class="os-service-name">{{ os.servico?.nomeTipoServico || os.nomeTipoServico || 'Carregando...' }}</span>
+                  <span class="os-service-name">{{ os.servicoNome || 'Sem serviço' }}</span>
                   <span class="os-date" v-if="os.data">{{ formatDate(os.data) }}</span>
                 </div>
                 <button class="btn view-btn" @click="openOSDetail(os)">Ver</button>

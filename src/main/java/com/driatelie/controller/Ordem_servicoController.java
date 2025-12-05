@@ -153,6 +153,7 @@ public class Ordem_servicoController {
             }
             if (o.getServico() != null) {
                 servicoId = o.getServico().getId_servicos();
+                servicoNome = o.getServico().getNomeTipoServico();
             }
         } catch (Exception ex) {
             // in case proxy/LAZY causes issues, fall back to nulls

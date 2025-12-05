@@ -383,21 +383,23 @@ export const Clientes = {
 
       <!-- Modal de Lista de Serviços -->
       <div v-if="servicesModalOpen" class="modal-backdrop" @click.self="closeServiceList">
-        <div class="modal">
-          <h2 class="modal-title">Ordens de Serviço - {{ selectedClient?.nome }}</h2>
+        <div class="modal services-modal">
+          <h2 class="modal-title">Lista de Serviços</h2>
+          <p class="modal-subtitle" v-if="selectedClient">Cliente: {{ selectedClient.nome }} (#{{ selectedClient.id }})</p>
 
-          <div v-if="servicesLoading" class="loading-message">Carregando serviços...</div>
+          <div v-if="servicesLoading" class="loading-message">Carregando ordens de serviço...</div>
           <div v-else-if="servicesError" class="error-message">{{ servicesError }}</div>
-          <div v-else-if="ordens.length === 0" class="empty-message">Nenhuma ordem de serviço encontrada</div>
-
-          <div v-else class="services-list">
-            <div v-for="os in ordens" :key="os.id" class="service-item" @click="openOSDetail(os)">
-              <div class="service-header">
-                <span class="service-id">OS #{{ os.id }}</span>
-                <span class="service-name">{{ os.servico?.nomeTipoServico || 'Sem nome' }}</span>
-              </div>
-              <div class="service-status">{{ os.status || 'Pendente' }}</div>
-            </div>
+          <div v-else>
+            <div v-if="ordens.length === 0" class="empty-message">Nenhuma ordem de serviço para este cliente.</div>
+            <ul class="os-list" v-else>
+              <li v-for="os in ordens" :key="os.id" class="os-item">
+                <div class="os-info">
+                  <span class="os-service-name">{{ os.servico?.nomeTipoServico || os.nomeTipoServico || 'Carregando...' }}</span>
+                  <span class="os-date" v-if="os.data">{{ formatDate(os.data) }}</span>
+                </div>
+                <button class="btn view-btn" @click="openOSDetail(os)">Ver</button>
+              </li>
+            </ul>
           </div>
 
           <div class="modal-actions">
@@ -408,18 +410,21 @@ export const Clientes = {
 
       <!-- Modal de Detalhes da Ordem de Serviço -->
       <div v-if="osDetailModalOpen" class="modal-backdrop" @click.self="closeOSDetail">
-        <div class="modal">
+        <div class="modal os-detail-modal">
           <h2 class="modal-title">Detalhes da Ordem de Serviço</h2>
-
-          <div v-if="selectedOS" class="os-details">
-            <p><strong>ID:</strong> {{ selectedOS.id }}</p>
-            <p><strong>Serviço:</strong> {{ selectedOS.servico?.nomeTipoServico || selectedOS.nomeTipoServico || 'Sem nome' }}</p>
-            <p><strong>Status:</strong> {{ selectedOS.status || 'Pendente' }}</p>
-            <p v-if="selectedOS.dataEntrada"><strong>Data de Entrada:</strong> {{ formatDate(selectedOS.dataEntrada) }}</p>
-            <p v-if="selectedOS.dataSaida"><strong>Data de Saída:</strong> {{ formatDate(selectedOS.dataSaida) }}</p>
-            <p v-if="selectedOS.descricao"><strong>Descrição:</strong> {{ selectedOS.descricao }}</p>
+          <div v-if="selectedOS" class="os-detail-content">
+            <div class="detail-row"><strong>Ordem de Serviço(Id):</strong> <span class="detail-row-value">{{ selectedOS.id }}</span></div>
+            <div class="detail-row" v-if="selectedOS.servico && selectedOS.servico.nomeTipoServico"><strong>Serviço:</strong> <span class="detail-row-value">{{ selectedOS.servico.nomeTipoServico }}</span></div>
+            <div class="detail-row" v-else-if="selectedOS.nomeTipoServico"><strong>Serviço:</strong> <span class="detail-row-value">{{ selectedOS.nomeTipoServico }}</span></div>
+            <div class="detail-row" v-if="selectedOS.servico?.id_servicos != null"><strong>Serviço(id):</strong> <span class="detail-row-value">{{ selectedOS.servico.id_servicos }}</span></div>
+            <div class="detail-row" v-if="selectedOS.data"><strong>Data:</strong> <span class="detail-row-value">{{ formatDate(selectedOS.data) }}</span></div>
+            <div class="detail-row" v-if="selectedOS.servico && selectedOS.servico.tempo_estimado != null"><strong>Tempo estimado (em dias):</strong> <span class="detail-row-value">{{ selectedOS.servico.tempo_estimado }}</span></div>
+            <div class="detail-row" v-else-if="selectedOS.tempoEstimadoDias != null"><strong>Tempo estimado (em dias):</strong> <span class="detail-row-value">{{ selectedOS.tempoEstimadoDias }}</span></div>
+            <div class="detail-row" v-if="selectedOS.valorTotal != null"><strong>Valor total:</strong> <span class="detail-row-value">R$ {{ (selectedOS.valorTotal || 0).toFixed(2).replace('.', ',') }}</span></div>
+            <div class="detail-row" v-if="selectedOS.sinal != null"><strong>Sinal:</strong> <span class="detail-row-value">R$ {{ (selectedOS.sinal || 0).toFixed(2).replace('.', ',') }}</span></div>
+            <div class="detail-row" v-if="selectedOS.tipoPagamento"><strong>Tipo pagamento:</strong> <span class="detail-row-value">{{ selectedOS.tipoPagamento }}</span></div>
+            <div class="detail-row" v-if="selectedOS.observacoes"><strong>Observações:</strong> <span class="detail-row-value">{{ selectedOS.observacoes }}</span></div>
           </div>
-
           <div class="modal-actions">
             <button class="btn cancel-btn" @click="closeOSDetail">Fechar</button>
           </div>

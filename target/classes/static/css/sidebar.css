@@ -1,11 +1,13 @@
 .container-sidebar {
-  width: 18%;
+  width: 220px;
+  flex-shrink: 0;
   background: var(--sidebar-bg);
   color: var(--white);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 24px 0;
+  overflow-x: hidden;
 }
 
 .sidebar-top {

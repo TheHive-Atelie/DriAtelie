@@ -124,7 +124,7 @@ export const Home = {
 
       <section class="page-content home-page">
         <div v-if="error" class="error-message">{{ error }}</div>
-        <div v-else>
+        <div v-else class="carousels-container">
           <div class="carousel-row">
             <div class="carousel-header">
               <h2>Produção</h2>

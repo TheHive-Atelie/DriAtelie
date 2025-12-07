@@ -32,7 +32,8 @@ export const Clientes = {
       selectedClient: null,
       ordens: [],
       osDetailModalOpen: false,
-      selectedOS: null
+      selectedOS: null,
+      statusDraft: null
     };
   },
   mounted() {
@@ -199,6 +200,35 @@ export const Clientes = {
       this.filters = { id: '', nome: '', email: '', telefone: '' };
     },
 
+    normalizeStatus(raw) {
+      if (raw === 'Encerrados' || raw === 'Encerrado') return 'Pendente';
+      if (raw === 'Finalizados' || raw === 'Finalizado') return 'Finalizados';
+      if (raw === 'Producao' || raw === 'Produção') return 'Producao';
+      return raw || 'Pendente';
+    },
+    loadStoredStatuses() {
+      return JSON.parse(localStorage.getItem('osStatus') || '{}');
+    },
+    saveStatus(osId, status) {
+      const stored = this.loadStoredStatuses();
+      stored[osId] = status;
+      localStorage.setItem('osStatus', JSON.stringify(stored));
+    },
+    applyLocalStatuses(list) {
+      const stored = this.loadStoredStatuses();
+      (list || []).forEach((os) => {
+        os.status = this.normalizeStatus(stored[os.id]) || 'Pendente';
+      });
+    },
+    clientName(os) {
+      const name = os?.cliente?.nome || this.selectedClient?.nome || null;
+      return name && name.trim() ? name : 'Cliente';
+    },
+    clientPhone(os) {
+      const phone = os?.cliente?.telefone_cliente || this.selectedClient?.telefone_cliente || null;
+      return phone && String(phone).trim() ? phone : 'Não informado';
+    },
+
     // Serviços modals
     async openServiceList(client) {
       this.selectedClient = client;
@@ -211,7 +241,7 @@ export const Clientes = {
         if (!resp.ok) throw new Error(`Erro ao carregar ordens de serviço: ${resp.status}`);
         const data = await resp.json();
         this.ordens = Array.isArray(data) ? data : [];
-        
+
         // Buscar nome do serviço para cada ordem se não vier no relacionamento
         for (let os of this.ordens) {
           if (!os.servico && os.servico?.id_servicos) {
@@ -219,7 +249,12 @@ export const Clientes = {
           } else if (os.servico) {
             os.nomeTipoServico = os.servico.nomeTipoServico;
           }
+          if (!os.cliente) {
+            os.cliente = client;
+          }
         }
+
+        this.applyLocalStatuses(this.ordens);
       } catch (e) {
         this.servicesError = e.message;
       } finally {
@@ -234,6 +269,7 @@ export const Clientes = {
     },
     async openOSDetail(os) {
       this.selectedOS = os;
+      this.statusDraft = this.normalizeStatus(os.status);
       // Buscar nome do serviço se não tiver no relacionamento
       if (!os.servico || !os.servico.nomeTipoServico) {
         if (os.servico?.id_servicos) {
@@ -247,6 +283,15 @@ export const Clientes = {
     closeOSDetail() {
       this.osDetailModalOpen = false;
       this.selectedOS = null;
+      this.statusDraft = null;
+    },
+    applyStatus() {
+      if (!this.selectedOS) return;
+      const normalized = this.normalizeStatus(this.statusDraft);
+      this.selectedOS.status = normalized;
+      this.saveStatus(this.selectedOS.id, normalized);
+      this.statusDraft = normalized;
+      this.ordens = [...this.ordens];
     }
   },
   
@@ -417,16 +462,26 @@ export const Clientes = {
           <h2 class="modal-title">Detalhes da Ordem de Serviço</h2>
           <div v-if="selectedOS" class="os-detail-content">
             <div class="detail-row"><strong>Ordem de Serviço(Id):</strong> <span class="detail-row-value">{{ selectedOS.id }}</span></div>
+            <div class="detail-row"><strong>Cliente:</strong> <span class="detail-row-value">{{ clientName(selectedOS) }}</span></div>
             <div class="detail-row" v-if="selectedOS.servico && selectedOS.servico.nomeTipoServico"><strong>Serviço:</strong> <span class="detail-row-value">{{ selectedOS.servico.nomeTipoServico }}</span></div>
             <div class="detail-row" v-else-if="selectedOS.nomeTipoServico"><strong>Serviço:</strong> <span class="detail-row-value">{{ selectedOS.nomeTipoServico }}</span></div>
             <div class="detail-row" v-if="selectedOS.servico?.id_servicos != null"><strong>Serviço(id):</strong> <span class="detail-row-value">{{ selectedOS.servico.id_servicos }}</span></div>
             <div class="detail-row" v-if="selectedOS.data"><strong>Data:</strong> <span class="detail-row-value">{{ formatDate(selectedOS.data) }}</span></div>
+            <div class="detail-row"><strong>Contato:</strong> <span class="detail-row-value">{{ clientPhone(selectedOS) }}</span></div>
             <div class="detail-row" v-if="selectedOS.servico && selectedOS.servico.tempo_estimado != null"><strong>Tempo estimado (em dias):</strong> <span class="detail-row-value">{{ selectedOS.servico.tempo_estimado }}</span></div>
             <div class="detail-row" v-else-if="selectedOS.tempoEstimadoDias != null"><strong>Tempo estimado (em dias):</strong> <span class="detail-row-value">{{ selectedOS.tempoEstimadoDias }}</span></div>
             <div class="detail-row" v-if="selectedOS.valorTotal != null"><strong>Valor total:</strong> <span class="detail-row-value">R$ {{ (selectedOS.valorTotal || 0).toFixed(2).replace('.', ',') }}</span></div>
             <div class="detail-row" v-if="selectedOS.sinal != null"><strong>Sinal:</strong> <span class="detail-row-value">R$ {{ (selectedOS.sinal || 0).toFixed(2).replace('.', ',') }}</span></div>
             <div class="detail-row" v-if="selectedOS.tipoPagamento"><strong>Tipo pagamento:</strong> <span class="detail-row-value">{{ selectedOS.tipoPagamento }}</span></div>
             <div class="detail-row" v-if="selectedOS.observacoes"><strong>Observações:</strong> <span class="detail-row-value">{{ selectedOS.observacoes }}</span></div>
+            <div class="detail-row">
+              <strong>Status:</strong>
+              <select v-model="statusDraft" @change="applyStatus" class="status-select">
+                <option value="Producao">Produção</option>
+                <option value="Finalizados">Finalizados</option>
+                <option value="Pendente">Pendente</option>
+              </select>
+            </div>
           </div>
           <div class="modal-actions">
             <button class="btn cancel-btn" @click="closeOSDetail">Fechar</button>

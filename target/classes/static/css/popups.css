@@ -183,3 +183,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.os-detail-modal .detail-row-value.full {
+  max-width: none;
+  overflow: visible;
+  text-overflow: unset;
+}

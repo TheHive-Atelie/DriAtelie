@@ -3,6 +3,7 @@ package com.driatelie.dto;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class OrdemServicoDTO {
     // This field is optional and used only to support older payload shapes from Postman/UI.
     private ClienteRef cliente;
     private String clienteNome;
+    private String clienteTelefone;
     private Integer servicoId;
     private String servicoNome;
     private ServicoRef servico;

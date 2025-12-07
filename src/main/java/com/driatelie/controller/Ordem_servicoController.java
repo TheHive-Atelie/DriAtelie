@@ -5,19 +5,18 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.driatelie.model.entity.Ordem_servico;
-import com.driatelie.dto.OrdemServicoDTO;
-import com.driatelie.service.Ordem_servicoService;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.driatelie.dto.OrdemServicoDTO;
+import com.driatelie.model.entity.Ordem_servico;
+import com.driatelie.service.Ordem_servicoService;
 
 
 
@@ -133,12 +132,14 @@ public class Ordem_servicoController {
     private OrdemServicoDTO toDto(Ordem_servico o) {
         Integer clienteId = null;
         String clienteNome = null;
+        String clienteTelefone = null;
         Integer servicoId = null;
         String servicoNome = null;
         try {
             if (o.getCliente() != null) {
                 clienteId = o.getCliente().getId();
                 clienteNome = o.getCliente().getNome();
+                clienteTelefone = o.getCliente().getTelefone_cliente();
             }
             if (o.getServico() != null) {
                 servicoId = o.getServico().getId_servicos();
@@ -151,6 +152,7 @@ public class Ordem_servicoController {
         dto.setId(o.getId());
         dto.setClienteId(clienteId);
         dto.setClienteNome(clienteNome);
+        dto.setClienteTelefone(clienteTelefone);
         dto.setData(o.getData());
         dto.setValorTotal(o.getValorTotal());
         dto.setSinal(o.getSinal());

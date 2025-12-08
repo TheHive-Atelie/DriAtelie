@@ -243,10 +243,21 @@ export const Comandas = {
 
       try {
         if (this.editingOrder && this.editingOrder.id) {
+          // Build entity-shaped payload expected by the PUT endpoint
+          const payloadEntity = {
+            cliente: { id: payload.clienteId },
+            servico: { id_servicos: payload.servicoId },
+            data: payload.data,
+            valorTotal: payload.valorTotal,
+            sinal: payload.sinal,
+            tipoPagamento: payload.tipoPagamento,
+            observacoes: payload.observacoes
+          }
+
           const res = await fetch(`/os/${this.editingOrder.id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payloadEntity)
           })
           if (!res.ok) {
             const txt = await res.text()

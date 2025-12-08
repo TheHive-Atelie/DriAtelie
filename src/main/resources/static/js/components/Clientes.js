@@ -32,7 +32,8 @@ export const Clientes = {
       selectedClient: null,
       ordens: [],
       osDetailModalOpen: false,
-      selectedOS: null
+      selectedOS: null,
+      statusDraft: null
     };
   },
   mounted() {
@@ -111,19 +112,11 @@ export const Clientes = {
     },
     formatDate(dateString) {
       if (!dateString) return '';
-      try {
-        // Parse YYYY-MM-DD directly to avoid timezone issues
-        const parts = String(dateString).split('-')
-        if (parts.length === 3) {
-          const year = parseInt(parts[0])
-          const month = parseInt(parts[1])
-          const day = parseInt(parts[2])
-          return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`
-        }
-        return dateString
-      } catch (e) {
-        return dateString
-      }
+      const date = new Date(dateString + 'T00:00:00');
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
     },
     async getServiceName(idServicos) {
       try {
@@ -207,6 +200,35 @@ export const Clientes = {
       this.filters = { id: '', nome: '', email: '', telefone: '' };
     },
 
+    normalizeStatus(raw) {
+      if (raw === 'Encerrados' || raw === 'Encerrado') return 'Pendente';
+      if (raw === 'Finalizados' || raw === 'Finalizado') return 'Finalizados';
+      if (raw === 'Producao' || raw === 'Produção') return 'Producao';
+      return raw || 'Pendente';
+    },
+    loadStoredStatuses() {
+      return JSON.parse(localStorage.getItem('osStatus') || '{}');
+    },
+    saveStatus(osId, status) {
+      const stored = this.loadStoredStatuses();
+      stored[osId] = status;
+      localStorage.setItem('osStatus', JSON.stringify(stored));
+    },
+    applyLocalStatuses(list) {
+      const stored = this.loadStoredStatuses();
+      (list || []).forEach((os) => {
+        os.status = this.normalizeStatus(stored[os.id]) || 'Pendente';
+      });
+    },
+    clientName(os) {
+      const name = os?.cliente?.nome || this.selectedClient?.nome || null;
+      return name && name.trim() ? name : 'Cliente';
+    },
+    clientPhone(os) {
+      const phone = os?.cliente?.telefone_cliente || this.selectedClient?.telefone_cliente || null;
+      return phone && String(phone).trim() ? phone : 'Não informado';
+    },
+
     // Serviços modals
     async openServiceList(client) {
       this.selectedClient = client;
@@ -220,12 +242,19 @@ export const Clientes = {
         const data = await resp.json();
         this.ordens = Array.isArray(data) ? data : [];
 
-        // Usar servicoNome do DTO, que já vem preenchido do backend
+        // Buscar nome do serviço para cada ordem se não vier no relacionamento
         for (let os of this.ordens) {
-          if (!os.servicoNome && os.servicoId) {
-            os.servicoNome = await this.getServiceName(os.servicoId);
+          if (!os.servico && os.servico?.id_servicos) {
+            os.nomeTipoServico = await this.getServiceName(os.servico.id_servicos);
+          } else if (os.servico) {
+            os.nomeTipoServico = os.servico.nomeTipoServico;
+          }
+          if (!os.cliente) {
+            os.cliente = client;
           }
         }
+
+        this.applyLocalStatuses(this.ordens);
       } catch (e) {
         this.servicesError = e.message;
       } finally {
@@ -240,12 +269,29 @@ export const Clientes = {
     },
     async openOSDetail(os) {
       this.selectedOS = os;
-      // Já temos servicoNome do backend, não precisa buscar novamente
+      this.statusDraft = this.normalizeStatus(os.status);
+      // Buscar nome do serviço se não tiver no relacionamento
+      if (!os.servico || !os.servico.nomeTipoServico) {
+        if (os.servico?.id_servicos) {
+          os.nomeTipoServico = await this.getServiceName(os.servico.id_servicos);
+        }
+      } else {
+        os.nomeTipoServico = os.servico.nomeTipoServico;
+      }
       this.osDetailModalOpen = true;
     },
     closeOSDetail() {
       this.osDetailModalOpen = false;
       this.selectedOS = null;
+      this.statusDraft = null;
+    },
+    applyStatus() {
+      if (!this.selectedOS) return;
+      const normalized = this.normalizeStatus(this.statusDraft);
+      this.selectedOS.status = normalized;
+      this.saveStatus(this.selectedOS.id, normalized);
+      this.statusDraft = normalized;
+      this.ordens = [...this.ordens];
     }
   },
   
@@ -254,12 +300,7 @@ export const Clientes = {
       <header class="page-header">
         <div class="header-left">
           <h1 class="header-title">Listagem de clientes</h1>
-          <nav class="header-tabs">
-            <button class="tab active">Listagem de clientes</button>
-            <button class="tab">Lista de espera</button>
-          </nav>
         </div>
-
         <div class="header-right">
           <div class="brand">DRI'AH</div>
           <div class="avatar"></div>
@@ -318,10 +359,10 @@ export const Clientes = {
               </div>
             </div>
           </div>
-
         </div>
       </section>
 
+      <!-- Add/Edit modal -->
       <div v-if="modalOpen" class="modal-backdrop" @click.self="closeModal">
         <div class="modal">
           <h2 class="modal-title" v-if="modalMode==='add'">Adicionar Cliente</h2>
@@ -343,6 +384,7 @@ export const Clientes = {
         </div>
       </div>
 
+      <!-- Delete confirm modal -->
       <div v-if="deleteConfirmOpen" class="modal-backdrop" @click.self="closeDeleteConfirm">
         <div class="modal delete-confirm-modal">
           <h2 class="modal-title delete-title">Excluir Cliente</h2>
@@ -355,45 +397,52 @@ export const Clientes = {
         </div>
       </div>
 
-      <!-- Modal de Filtros -->
+      <!-- Filters modal -->
       <div v-if="filtersOpen" class="modal-backdrop" @click.self="closeFilters">
-        <div class="modal">
-          <h2 class="modal-title">Filtros de Pesquisa</h2>
-
-          <label class="modal-label">ID:</label>
-          <input class="modal-input" v-model="filters.id" type="text" placeholder="ID do cliente">
-
-          <label class="modal-label">Nome:</label>
-          <input class="modal-input" v-model="filters.nome" type="text" placeholder="Nome">
-
-          <label class="modal-label">Email:</label>
-          <input class="modal-input" v-model="filters.email" type="email" placeholder="Email">
-
-          <label class="modal-label">Telefone:</label>
-          <input class="modal-input" v-model="filters.telefone" type="text" placeholder="Telefone">
-
+        <div class="modal filters-modal">
+          <button class="modal-close-btn" @click="closeFilters" aria-label="Fechar">
+            <i class="fa fa-times"></i>
+          </button>
+          <h2 class="modal-title">Filtros de pesquisa</h2>
+          <div class="filters-grid">
+            <div class="filter-field">
+              <label>Id</label>
+              <input class="modal-input" v-model="filters.id" type="text" placeholder="Ex: 1">
+            </div>
+            <div class="filter-field">
+              <label>Nome</label>
+              <input class="modal-input" v-model="filters.nome" type="text" placeholder="Nome">
+            </div>
+            <div class="filter-field">
+              <label>Email</label>
+              <input class="modal-input" v-model="filters.email" type="text" placeholder="email@...">
+            </div>
+            <div class="filter-field">
+              <label>Telefone</label>
+              <input class="modal-input" v-model="filters.telefone" @input="filters.telefone = formatPhone(filters.telefone)" type="text" placeholder="99 99999-9999">
+            </div>
+          </div>
           <div class="modal-actions">
-            <button class="btn add-btn" @click="applyFilters">Aplicar</button>
             <button class="btn cancel-btn" @click="clearFilters">Limpar</button>
-            <button class="btn cancel-btn" @click="closeFilters">Fechar</button>
+            <button class="btn add-btn" @click="applyFilters">Aplicar</button>
           </div>
         </div>
       </div>
 
-      <!-- Modal de Lista de Serviços -->
+      <!-- Services list modal -->
       <div v-if="servicesModalOpen" class="modal-backdrop" @click.self="closeServiceList">
         <div class="modal services-modal">
           <h2 class="modal-title">Lista de Serviços</h2>
           <p class="modal-subtitle" v-if="selectedClient">Cliente: {{ selectedClient.nome }} (#{{ selectedClient.id }})</p>
-
+          
           <div v-if="servicesLoading" class="loading-message">Carregando ordens de serviço...</div>
           <div v-else-if="servicesError" class="error-message">{{ servicesError }}</div>
           <div v-else>
             <div v-if="ordens.length === 0" class="empty-message">Nenhuma ordem de serviço para este cliente.</div>
-            <ul class="os-list" v-else>
+            <ul class="os-list">
               <li v-for="os in ordens" :key="os.id" class="os-item">
                 <div class="os-info">
-                  <span class="os-service-name">{{ os.servicoNome || 'Sem serviço' }}</span>
+                  <span class="os-service-name">{{ os.servico?.nomeTipoServico || os.nomeTipoServico || 'Carregando...' }}</span>
                   <span class="os-date" v-if="os.data">{{ formatDate(os.data) }}</span>
                 </div>
                 <button class="btn view-btn" @click="openOSDetail(os)">Ver</button>
@@ -407,20 +456,32 @@ export const Clientes = {
         </div>
       </div>
 
-      <!-- Modal de Detalhes da Ordem de Serviço -->
+      <!-- OS detail modal -->
       <div v-if="osDetailModalOpen" class="modal-backdrop" @click.self="closeOSDetail">
         <div class="modal os-detail-modal">
           <h2 class="modal-title">Detalhes da Ordem de Serviço</h2>
           <div v-if="selectedOS" class="os-detail-content">
-            <div class="detail-row"><strong>ID Ordem:</strong> <span class="detail-row-value">#{{ selectedOS.id }}</span></div>
-            <div class="detail-row"><strong>Serviço:</strong> <span class="detail-row-value">{{ selectedOS.servicoNome || 'N/A' }}</span></div>
-            <div class="detail-row"><strong>ID Serviço:</strong> <span class="detail-row-value">#{{ selectedOS.servicoId || 'N/A' }}</span></div>
+            <div class="detail-row"><strong>Ordem de Serviço(Id):</strong> <span class="detail-row-value">{{ selectedOS.id }}</span></div>
+            <div class="detail-row"><strong>Cliente:</strong> <span class="detail-row-value">{{ clientName(selectedOS) }}</span></div>
+            <div class="detail-row" v-if="selectedOS.servico && selectedOS.servico.nomeTipoServico"><strong>Serviço:</strong> <span class="detail-row-value">{{ selectedOS.servico.nomeTipoServico }}</span></div>
+            <div class="detail-row" v-else-if="selectedOS.nomeTipoServico"><strong>Serviço:</strong> <span class="detail-row-value">{{ selectedOS.nomeTipoServico }}</span></div>
+            <div class="detail-row" v-if="selectedOS.servico?.id_servicos != null"><strong>Serviço(id):</strong> <span class="detail-row-value">{{ selectedOS.servico.id_servicos }}</span></div>
             <div class="detail-row" v-if="selectedOS.data"><strong>Data:</strong> <span class="detail-row-value">{{ formatDate(selectedOS.data) }}</span></div>
-            <div class="detail-row" v-if="selectedOS.tempoEstimadoDias != null"><strong>Tempo Estimado:</strong> <span class="detail-row-value">{{ selectedOS.tempoEstimadoDias }} dias</span></div>
-            <div class="detail-row" v-if="selectedOS.valorTotal != null"><strong>Valor Total:</strong> <span class="detail-row-value">R$ {{ (selectedOS.valorTotal || 0).toFixed(2).replace('.', ',') }}</span></div>
+            <div class="detail-row"><strong>Contato:</strong> <span class="detail-row-value">{{ clientPhone(selectedOS) }}</span></div>
+            <div class="detail-row" v-if="selectedOS.servico && selectedOS.servico.tempo_estimado != null"><strong>Tempo estimado (em dias):</strong> <span class="detail-row-value">{{ selectedOS.servico.tempo_estimado }}</span></div>
+            <div class="detail-row" v-else-if="selectedOS.tempoEstimadoDias != null"><strong>Tempo estimado (em dias):</strong> <span class="detail-row-value">{{ selectedOS.tempoEstimadoDias }}</span></div>
+            <div class="detail-row" v-if="selectedOS.valorTotal != null"><strong>Valor total:</strong> <span class="detail-row-value">R$ {{ (selectedOS.valorTotal || 0).toFixed(2).replace('.', ',') }}</span></div>
             <div class="detail-row" v-if="selectedOS.sinal != null"><strong>Sinal:</strong> <span class="detail-row-value">R$ {{ (selectedOS.sinal || 0).toFixed(2).replace('.', ',') }}</span></div>
-            <div class="detail-row" v-if="selectedOS.tipoPagamento"><strong>Tipo Pagamento:</strong> <span class="detail-row-value">{{ selectedOS.tipoPagamento }}</span></div>
+            <div class="detail-row" v-if="selectedOS.tipoPagamento"><strong>Tipo pagamento:</strong> <span class="detail-row-value">{{ selectedOS.tipoPagamento }}</span></div>
             <div class="detail-row" v-if="selectedOS.observacoes"><strong>Observações:</strong> <span class="detail-row-value">{{ selectedOS.observacoes }}</span></div>
+            <div class="detail-row">
+              <strong>Status:</strong>
+              <select v-model="statusDraft" @change="applyStatus" class="status-select">
+                <option value="Producao">Produção</option>
+                <option value="Finalizados">Finalizados</option>
+                <option value="Pendente">Pendente</option>
+              </select>
+            </div>
           </div>
           <div class="modal-actions">
             <button class="btn cancel-btn" @click="closeOSDetail">Fechar</button>

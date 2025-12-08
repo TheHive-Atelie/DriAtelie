@@ -11,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import com.driatelie.model.entity.Servico;
 import jakarta.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -33,13 +32,17 @@ public class Ordem_servico {
     @Column(name = "idordens_de_servico")
     private Integer id;
     
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_cliente", nullable = false, 
                 foreignKey = @ForeignKey(name = "fk_ordem_servico_cliente"))
-  // Include cliente information when serializing Ordem_servico, but avoid serializing the cliente's
-  // `ordensServico` back-reference to prevent infinite recursion.
-  @JsonIgnoreProperties({"ordensServico"})
-  private Cliente cliente;
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Cliente cliente;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_servicos", nullable = false,
+                foreignKey = @ForeignKey(name = "fk_ordem_servico_servico"))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Servico servico;
     
     @Column(name = "data")
     private LocalDate data;
@@ -55,24 +58,8 @@ public class Ordem_servico {
     
     @Column(name = "obs", length = 350)
     private String observacoes;
-    
-    // link to the chosen service for this order. Database table contains an
-    // `id_servicos` foreign key column; map it here so inserts include the
-    // required value.
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_servicos", nullable = false,
-          foreignKey = @ForeignKey(name = "fk_ordem_servico_servico"))
-    @JsonIgnoreProperties({})
-    private Servico servico;
-    
-    // // Método conveniente para obter o telefone do cliente
-    // public String getTelefoneCliente() {
-    //     return cliente != null ? cliente.getTelefone() : null;
-    // }
 
-}
-
-/*
+}/*
 CREATE TABLE `driah`.`ordens_de_servico` (
   `idordens_de_servico` INT NOT NULL AUTO_INCREMENT,
   `id_cliente` INT NOT NULL,

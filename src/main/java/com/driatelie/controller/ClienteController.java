@@ -1,6 +1,7 @@
 package com.driatelie.controller;
 
 import com.driatelie.model.entity.Cliente;
+import com.driatelie.model.entity.Ordem_servico;
 import com.driatelie.service.ClienteService;
 import com.driatelie.dto.ClienteDTO;
 
@@ -18,6 +19,7 @@ public class ClienteController {
 
     @Autowired
     private ClienteService clienteService;
+
 
     @GetMapping
     public ResponseEntity<List<ClienteDTO>> listAll() {
@@ -74,7 +76,7 @@ public class ClienteController {
 
     @GetMapping("/{id}/servicos")
     public ResponseEntity<List<Ordem_servico>> getOrdensDeServico(@PathVariable Integer id) {
-        List<Ordem_servico> ordens = clienteService.getOrdensServicoByClienteId(id);
+        List<Ordem_servico> ordens = clienteService.getOSByClientId(id);
         return ResponseEntity.ok(ordens);
     }
 

@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.driatelie.model.entity.Cliente;
+import com.driatelie.model.entity.Ordem_servico;
 import com.driatelie.model.entity.repository.ClienteRepository;
 
 import jakarta.transaction.Transactional;
@@ -38,5 +39,9 @@ public class ClienteService {
     @Transactional
     public void deleteCliente(Integer id) {
         clienteRepository.deleteById(id);
+    }
+
+    public List<Ordem_servico> getOSByClientId(Integer id){
+       return clienteRepository.findOrdem_servicosById(id);
     }
 }

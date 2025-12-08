@@ -377,12 +377,13 @@ export const Comandas = {
                 <div class="value-column cell cell--sinal">{{ formatCurrency(order.sinal) }}</div>
                 <div class="status-column cell cell--pagamento">{{ order.tipoPagamento || '-' }}</div>
                 <div class="actions-column actions cell cell--acoes">
-                  <button class="view-btn action-btn" @click="onView(order)">Ver</button>
-                  <br>
-                  <button class="edit-btn action-btn" @click="openEditModal(order)">Editar</button>
-                  <br>
-                  <button class="delete-btn action-btn" @click="deleteOrder(order.id)">Remover</button>
-                  <br>
+                  <button class="view-btn action-btn" @click="onView(order)" title="Ver" aria-label="Ver">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                  </button>
+                  <!-- edit button removed from row; editing available via View modal -->
+                  <button class="delete-btn action-btn" @click="deleteOrder(order.id)" title="Remover" aria-label="Remover">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                  </button>
                 </div>
               </div>
             </div>

@@ -74,6 +74,15 @@ public class Ordem_servicoController {
         }
     }
     
+    @GetMapping("/cliente/{clienteId}")
+    public ResponseEntity<?> findByClienteId(@PathVariable Integer clienteId) {
+        try {
+            List<Ordem_servico> filtered = ordem_servicoService.getOrdem_servicosByClienteId(clienteId);
+            return ResponseEntity.ok(filtered);
+        } catch (Exception ex) {
+            return ResponseEntity.status(500).body("Erro ao buscar ordens de serviço por cliente");
+        }
+    }
     
     @PostMapping
     public ResponseEntity<?> newOrdem_servico(@RequestBody OrdemServicoDTO dto) {

@@ -183,9 +183,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+<<<<<<< HEAD
 
 .os-detail-modal .detail-row-value.full {
   max-width: none;
   overflow: visible;
   text-overflow: unset;
 }
+=======
+>>>>>>> 81534521633675d034749f74debcdd273ca78748

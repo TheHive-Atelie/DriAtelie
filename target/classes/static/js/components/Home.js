@@ -99,14 +99,14 @@ export const Home = {
       return num.toFixed(2).replace('.', ',');
     },
     serviceName(os) {
-      return os?.servicoNome || os?.servico?.nomeTipoServico || os?.nomeTipoServico || os?.servico?.nome || 'Serviço';
+      return os?.servico?.nomeTipoServico || os?.nomeTipoServico || os?.servico?.nome || 'Serviço';
     },
     clientName(os) {
-      const name = os?.clienteNome || os?.cliente?.nome || os?.nomeCliente || null;
-      return name && String(name).trim() ? name : 'Cliente';
+      const name = os?.cliente?.nome || os?.nomeCliente || null;
+      return name && name.trim() ? name : 'Cliente';
     },
     clientPhone(os) {
-      const phone = os?.clienteTelefone || os?.cliente?.telefone_cliente || os?.telefone_cliente || null;
+      const phone = os?.cliente?.telefone_cliente || os?.telefone_cliente || null;
       return phone && String(phone).trim() ? phone : 'Não informado';
     }
   },

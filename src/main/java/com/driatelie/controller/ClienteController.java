@@ -1,7 +1,6 @@
 package com.driatelie.controller;
 
 import com.driatelie.model.entity.Cliente;
-import com.driatelie.model.entity.Ordem_servico;
 import com.driatelie.service.ClienteService;
 import com.driatelie.dto.ClienteDTO;
 
